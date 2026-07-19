@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="20 60 600 300" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#EA580C"/>
+    </marker>
+  </defs>
+  <rect x="20" y="60" width="600" height="300" fill="#ffffff"/>
+
+  <!-- 直線(延長・破線) -->
+  <line x1="32" y1="326" x2="608" y2="164" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
+
+  <!-- 円 -->
+  <circle cx="275" cy="174" r="100" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="275" cy="174" r="4.5" fill="#EA580C"/>
+  <text x="266" y="164" font-size="18" fill="#EA580C" text-anchor="end">C</text>
+
+  <!-- 半径r -->
+  <line x1="275" y1="174" x2="373.5" y2="157" stroke="#EA580C" stroke-width="2"/>
+  <text x="324" y="152" font-size="17" fill="#EA580C" font-style="italic">r</text>
+
+  <!-- 線分S-E -->
+  <line x1="90" y1="310" x2="550" y2="180" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="90" cy="310" r="5" fill="#334155"/>
+  <circle cx="550" cy="180" r="5" fill="#334155"/>
+  <text x="78" y="338" font-size="19" fill="#1F2937" text-anchor="middle">S</text>
+  <text x="562" y="176" font-size="19" fill="#1F2937">E</text>
+
+  <!-- SEベクトル(線分に重ねる) -->
+  <line x1="90" y1="310" x2="320" y2="245" stroke="#2563EB" stroke-width="3" marker-end="url(#arrowBlue)"/>
+  <text x="205" y="298" font-size="16" fill="#2563EB" text-anchor="middle" font-style="italic">SE</text>
+
+  <!-- SCベクトル -->
+  <line x1="90" y1="310" x2="275" y2="174" stroke="#EA580C" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+  <text x="163" y="228" font-size="16" fill="#EA580C" text-anchor="middle" font-style="italic">SC</text>
+
+  <!-- 垂線 d -->
+  <line x1="275" y1="174" x2="297" y2="252" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="6 5"/>
+  <text x="298" y="212" font-size="18" fill="#DC2626" font-style="italic">d</text>
+
+  <!-- 直角マーク -->
+  <path d="M 285.5 255.3 L 282.2 243.8 L 293.7 240.5" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+
+  <!-- θの弧 -->
+  <path d="M 142.9 295 A 55 55 0 0 0 134.3 277.4" fill="none" stroke="#1F2937" stroke-width="1.8"/>
+  <text x="150" y="284" font-size="16" fill="#1F2937" font-style="italic">θ</text>
+</svg>

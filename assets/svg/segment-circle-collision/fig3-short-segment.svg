@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="520" viewBox="20 50 610 260" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280"/>
+    </marker>
+  </defs>
+  <rect x="20" y="50" width="610" height="260" fill="#ffffff"/>
+
+  <!-- 直線(延長・破線) -->
+  <line x1="41" y1="248" x2="610" y2="134" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
+
+  <!-- 円 -->
+  <circle cx="492" cy="146" r="75" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="492" cy="146" r="4.5" fill="#EA580C"/>
+  <text x="482" y="136" font-size="18" fill="#EA580C" text-anchor="end">C</text>
+
+  <!-- 線分S-E(短い) -->
+  <line x1="80" y1="240" x2="230" y2="210" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="80" cy="240" r="5" fill="#334155"/>
+  <circle cx="230" cy="210" r="5" fill="#334155"/>
+  <text x="74" y="268" font-size="19" fill="#1F2937" text-anchor="middle">S</text>
+  <text x="236" y="234" font-size="19" fill="#1F2937">E</text>
+
+  <!-- すき間の両矢印 -->
+  <line x1="250" y1="203" x2="408" y2="171" stroke="#6B7280" stroke-width="1.8" marker-start="url(#arrowGray)" marker-end="url(#arrowGray)"/>
+  <text x="328" y="212" font-size="16" fill="#6B7280" text-anchor="middle">まだ遠い</text>
+
+  <!-- 誤判定の注意 -->
+  <text x="330" y="286" font-size="16" fill="#DC2626" text-anchor="middle">距離 d のチェックだけだと「当たり」と誤判定してしまう</text>
+</svg>

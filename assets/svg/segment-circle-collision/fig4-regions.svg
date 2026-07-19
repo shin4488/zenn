@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="40 50 600 250" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="40" y="50" width="600" height="250" fill="#ffffff"/>
+
+  <!-- 領域の境界(垂直破線) -->
+  <line x1="220" y1="60" x2="220" y2="290" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="6 5"/>
+  <line x1="460" y1="60" x2="460" y2="290" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="6 5"/>
+
+  <!-- 領域ラベル -->
+  <text x="120" y="82" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">始点の外側</text>
+  <text x="120" y="106" font-size="14" fill="#6B7280" text-anchor="middle">SE・SC &lt; 0</text>
+  <text x="340" y="82" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">S と E の間</text>
+  <text x="340" y="106" font-size="14" fill="#6B7280" text-anchor="middle">SE・SC ≥ 0 かつ ES・EC ≥ 0</text>
+  <text x="575" y="82" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">終点の外側</text>
+  <text x="575" y="106" font-size="14" fill="#6B7280" text-anchor="middle">ES・EC &lt; 0</text>
+
+  <!-- 円(左) -->
+  <circle cx="110" cy="160" r="42" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="110" cy="160" r="4" fill="#EA580C"/>
+  <text x="110" y="150" font-size="14" fill="#EA580C" text-anchor="middle">C</text>
+  <line x1="110" y1="160" x2="220" y2="230" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="148" y="226" font-size="13.5" fill="#DC2626" text-anchor="middle">Sとの距離で判定</text>
+
+  <!-- 円(中央) -->
+  <circle cx="340" cy="164" r="45" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="340" cy="164" r="4" fill="#EA580C"/>
+  <text x="340" y="154" font-size="14" fill="#EA580C" text-anchor="middle">C</text>
+  <line x1="340" y1="164" x2="340" y2="230" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="350" y="218" font-size="13.5" fill="#DC2626">垂線の距離 d で判定</text>
+
+  <!-- 円(右) -->
+  <circle cx="585" cy="155" r="42" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="585" cy="155" r="4" fill="#EA580C"/>
+  <text x="585" y="145" font-size="14" fill="#EA580C" text-anchor="middle">C</text>
+  <line x1="585" y1="155" x2="460" y2="230" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="558" y="228" font-size="13.5" fill="#DC2626" text-anchor="middle">Eとの距離で判定</text>
+
+  <!-- 線分S-E -->
+  <line x1="220" y1="230" x2="460" y2="230" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="220" cy="230" r="5" fill="#334155"/>
+  <circle cx="460" cy="230" r="5" fill="#334155"/>
+  <text x="220" y="260" font-size="19" fill="#1F2937" text-anchor="middle">S</text>
+  <text x="460" y="260" font-size="19" fill="#1F2937" text-anchor="middle">E</text>
+</svg>

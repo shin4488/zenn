@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="680" viewBox="0 0 700 340" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563EB"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="700" height="340" fill="#ffffff"/>
+
+  <!-- ===== 左パネル ===== -->
+  <text x="60" y="46" font-size="17" fill="#1F2937" font-weight="bold">斜めの長さ L を「横」と「縦」に分ける</text>
+
+  <!-- 床 -->
+  <line x1="40" y1="270" x2="330" y2="270" stroke="#6B7280" stroke-width="2"/>
+
+  <!-- 棒 -->
+  <line x1="70" y1="270" x2="251" y2="128" stroke="#EA580C" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="70" cy="270" r="4" fill="#1F2937"/>
+  <text x="148" y="183" font-size="16" fill="#EA580C" text-anchor="middle">長さ L</text>
+
+  <!-- 垂線(破線)と直角マーク -->
+  <line x1="251" y1="128" x2="251" y2="270" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="6 5"/>
+  <path d="M 241 270 L 241 260 L 251 260" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+
+  <!-- θの弧 -->
+  <path d="M 115 270 A 45 45 0 0 0 105.5 242.3" fill="none" stroke="#1F2937" stroke-width="1.8"/>
+  <text x="124" y="257" font-size="16" fill="#1F2937" font-style="italic">θ</text>
+
+  <!-- 横の寸法線 -->
+  <line x1="70" y1="294" x2="251" y2="294" stroke="#6B7280" stroke-width="1.5"/>
+  <line x1="70" y1="288" x2="70" y2="300" stroke="#6B7280" stroke-width="1.5"/>
+  <line x1="251" y1="288" x2="251" y2="300" stroke="#6B7280" stroke-width="1.5"/>
+  <text x="160" y="320" font-size="16" fill="#374151" text-anchor="middle">横:L cosθ</text>
+
+  <!-- 縦の寸法線 -->
+  <line x1="271" y1="128" x2="271" y2="270" stroke="#6B7280" stroke-width="1.5"/>
+  <line x1="265" y1="128" x2="277" y2="128" stroke="#6B7280" stroke-width="1.5"/>
+  <line x1="265" y1="270" x2="277" y2="270" stroke="#6B7280" stroke-width="1.5"/>
+  <text x="281" y="205" font-size="16" fill="#374151">縦:L sinθ</text>
+
+  <!-- パネル区切り -->
+  <line x1="355" y1="28" x2="355" y2="295" stroke="#D1D5DB" stroke-width="2"/>
+
+  <!-- ===== 右パネル ===== -->
+  <text x="390" y="46" font-size="17" fill="#1F2937" font-weight="bold">90° を超えると「横」はマイナス</text>
+
+  <!-- 床 -->
+  <line x1="390" y1="270" x2="670" y2="270" stroke="#6B7280" stroke-width="2"/>
+
+  <!-- 基準の向き -->
+  <line x1="534" y1="252" x2="622" y2="252" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="630" y="257" font-size="14" fill="#2563EB">前</text>
+
+  <!-- 棒(後ろに倒れている) -->
+  <line x1="530" y1="270" x2="414" y2="132" stroke="#EA580C" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="530" cy="270" r="4" fill="#1F2937"/>
+
+  <!-- 垂線(破線) -->
+  <line x1="414" y1="132" x2="414" y2="270" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="6 5"/>
+
+  <!-- θの弧 -->
+  <path d="M 568 270 A 38 38 0 0 0 505.6 240.9" fill="none" stroke="#1F2937" stroke-width="1.8"/>
+  <text x="549" y="223" font-size="16" fill="#1F2937" font-style="italic">θ</text>
+
+  <!-- 横の寸法線(マイナス側) -->
+  <line x1="414" y1="294" x2="530" y2="294" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="414" y1="288" x2="414" y2="300" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="530" y1="288" x2="530" y2="300" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="472" y="320" font-size="16" fill="#DC2626" text-anchor="middle">横:L cosθ(マイナス)</text>
+</svg>

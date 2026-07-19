@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="600" viewBox="0 0 700 300" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="700" height="300" fill="#ffffff"/>
+
+  <!-- ===== 左:円同士 ===== -->
+  <text x="60" y="46" font-size="17" fill="#1F2937" font-weight="bold">円同士</text>
+  <text x="60" y="70" font-size="14" fill="#6B7280">中心間の距離 ≤ r1 + r2 なら当たり</text>
+
+  <circle cx="135" cy="190" r="52" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="222" cy="168" r="44" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="135" cy="190" r="4" fill="#EA580C"/>
+  <circle cx="222" cy="168" r="4" fill="#EA580C"/>
+
+  <!-- 半径 -->
+  <line x1="135" y1="190" x2="83" y2="190" stroke="#EA580C" stroke-width="1.8"/>
+  <text x="108" y="182" font-size="13.5" fill="#EA580C" text-anchor="middle" font-style="italic">r1</text>
+  <line x1="222" y1="168" x2="266" y2="168" stroke="#EA580C" stroke-width="1.8"/>
+  <text x="245" y="160" font-size="13.5" fill="#EA580C" text-anchor="middle" font-style="italic">r2</text>
+
+  <!-- 中心間の距離 -->
+  <line x1="135" y1="190" x2="222" y2="168" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="200" y="262" font-size="13.5" fill="#DC2626" text-anchor="middle">中心間の距離</text>
+
+  <!-- パネル区切り -->
+  <line x1="355" y1="28" x2="355" y2="272" stroke="#D1D5DB" stroke-width="2"/>
+
+  <!-- ===== 右:線分と円 ===== -->
+  <text x="390" y="46" font-size="17" fill="#1F2937" font-weight="bold">線分と円(この記事)</text>
+  <text x="390" y="70" font-size="14" fill="#6B7280">最短距離 ≤ r なら当たり</text>
+
+  <circle cx="505" cy="185" r="46" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="505" cy="185" r="4" fill="#EA580C"/>
+
+  <!-- 半径 -->
+  <line x1="505" y1="185" x2="551" y2="185" stroke="#EA580C" stroke-width="1.8"/>
+  <text x="528" y="176" font-size="13.5" fill="#EA580C" text-anchor="middle" font-style="italic">r</text>
+
+  <!-- 線分 -->
+  <line x1="390" y1="225" x2="655" y2="225" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="390" cy="225" r="4.5" fill="#334155"/>
+  <circle cx="655" cy="225" r="4.5" fill="#334155"/>
+
+  <!-- 最短距離 -->
+  <line x1="505" y1="185" x2="505" y2="225" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <path d="M 497 225 L 497 217 L 505 217" fill="none" stroke="#6B7280" stroke-width="1.3"/>
+  <text x="505" y="252" font-size="13.5" fill="#DC2626" text-anchor="middle">最短距離</text>
+</svg>
