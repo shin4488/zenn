@@ -7,23 +7,23 @@
   <rect x="20" y="50" width="610" height="260" fill="#ffffff"/>
 
   <!-- 直線(延長・破線) -->
-  <line x1="41" y1="248" x2="610" y2="134" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
+  <line x1="40" y1="190" x2="615" y2="190" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
 
   <!-- 円 -->
-  <circle cx="492" cy="146" r="75" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
-  <circle cx="492" cy="146" r="4.5" fill="#EA580C"/>
-  <text x="482" y="136" font-size="18" fill="#EA580C" text-anchor="end">C</text>
+  <circle cx="492" cy="182" r="75" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="492" cy="182" r="4.5" fill="#EA580C"/>
+  <text x="482" y="172" font-size="18" fill="#EA580C" text-anchor="end">C</text>
 
   <!-- 線分S-E(短い) -->
-  <line x1="80" y1="240" x2="230" y2="210" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="80" cy="240" r="5" fill="#334155"/>
-  <circle cx="230" cy="210" r="5" fill="#334155"/>
-  <text x="74" y="268" font-size="19" fill="#1F2937" text-anchor="middle">S</text>
-  <text x="236" y="234" font-size="19" fill="#1F2937">E</text>
+  <line x1="80" y1="190" x2="230" y2="190" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="80" cy="190" r="5" fill="#334155"/>
+  <circle cx="230" cy="190" r="5" fill="#334155"/>
+  <text x="80" y="220" font-size="19" fill="#1F2937" text-anchor="middle">S</text>
+  <text x="230" y="220" font-size="19" fill="#1F2937" text-anchor="middle">E</text>
 
   <!-- すき間の両矢印 -->
-  <line x1="250" y1="203" x2="408" y2="171" stroke="#6B7280" stroke-width="1.8" marker-start="url(#arrowGray)" marker-end="url(#arrowGray)"/>
-  <text x="328" y="212" font-size="16" fill="#6B7280" text-anchor="middle">まだ遠い</text>
+  <line x1="252" y1="190" x2="407" y2="190" stroke="#6B7280" stroke-width="1.8" marker-start="url(#arrowGray)" marker-end="url(#arrowGray)"/>
+  <text x="330" y="216" font-size="16" fill="#6B7280" text-anchor="middle">まだ遠い</text>
 
   <!-- 誤判定の注意 -->
   <text x="330" y="286" font-size="16" fill="#DC2626" text-anchor="middle">距離 d のチェックだけだと「当たり」と誤判定してしまう</text>
