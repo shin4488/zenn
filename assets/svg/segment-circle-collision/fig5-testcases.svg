@@ -1,9 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1720" viewBox="0 0 660 860" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
-  <rect x="0" y="0" width="660" height="860" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1690" viewBox="0 0 660 845" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="660" height="845" fill="#ffffff"/>
 
   <!-- ============ ケース1 ============ -->
-  <text x="50" y="60" font-size="17" fill="#1F2937" font-weight="bold">ケース1:円が S と E の間にいる</text>
-  <text x="50" y="84" font-size="12.5" fill="#6B7280" font-family="Menlo,monospace">isHitSegmentCircle(s, e, vec(50, 30), 40) → true</text>
+  <text x="50" y="60" font-size="17" fill="#1F2937" font-weight="bold">ケース1:円が S と E の間にある</text>
 
   <!-- 円 C(50,30) r=40 -->
   <circle cx="145" cy="150" r="60" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
@@ -13,7 +12,7 @@
   <!-- 垂線 d -->
   <line x1="145" y1="150" x2="145" y2="195" stroke="#DC2626" stroke-width="2" stroke-dasharray="5 4"/>
   <path d="M 137 195 L 137 187 L 145 187" fill="none" stroke="#6B7280" stroke-width="1.3"/>
-  <text x="145" y="220" font-size="14" fill="#DC2626" text-anchor="middle">d = 30</text>
+  <text x="145" y="228" font-size="14" fill="#DC2626" text-anchor="middle">d = 30</text>
 
   <!-- 線分 -->
   <line x1="70" y1="195" x2="220" y2="195" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
@@ -29,65 +28,63 @@
   <!-- ============ ケース2 ============ -->
   <line x1="40" y1="300" x2="620" y2="300" stroke="#E5E7EB" stroke-width="2"/>
   <text x="50" y="330" font-size="17" fill="#1F2937" font-weight="bold">ケース2:端の外側、半径が届かない</text>
-  <text x="50" y="354" font-size="12.5" fill="#6B7280" font-family="Menlo,monospace">isHitSegmentCircle(s, e, vec(150, 0), 40) → false</text>
 
   <!-- 延長線 -->
-  <line x1="220" y1="470" x2="390" y2="470" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
+  <line x1="220" y1="420" x2="390" y2="420" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
 
   <!-- 円 C(150,0) r=40 -->
-  <circle cx="295" cy="470" r="60" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
-  <circle cx="295" cy="470" r="4" fill="#EA580C"/>
-  <text x="295" y="452" font-size="14" fill="#EA580C" text-anchor="middle">C(150, 0)</text>
+  <circle cx="295" cy="420" r="60" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="295" cy="420" r="4" fill="#EA580C"/>
+  <text x="295" y="402" font-size="14" fill="#EA580C" text-anchor="middle">C(150, 0)</text>
 
   <!-- 線分 -->
-  <line x1="70" y1="470" x2="220" y2="470" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="70" cy="470" r="4.5" fill="#334155"/>
-  <circle cx="220" cy="470" r="4.5" fill="#334155"/>
-  <text x="70" y="495" font-size="14" fill="#1F2937" text-anchor="middle">S(0, 0)</text>
-  <text x="196" y="495" font-size="14" fill="#1F2937" text-anchor="middle">E(100, 0)</text>
+  <line x1="70" y1="420" x2="220" y2="420" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="70" cy="420" r="4.5" fill="#334155"/>
+  <circle cx="220" cy="420" r="4.5" fill="#334155"/>
+  <text x="70" y="445" font-size="14" fill="#1F2937" text-anchor="middle">S(0, 0)</text>
+  <text x="196" y="445" font-size="14" fill="#1F2937" text-anchor="middle">E(100, 0)</text>
 
   <!-- |EC| の寸法線 -->
-  <line x1="220" y1="470" x2="220" y2="520" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
-  <line x1="295" y1="470" x2="295" y2="520" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
-  <line x1="220" y1="520" x2="295" y2="520" stroke="#DC2626" stroke-width="1.5"/>
-  <line x1="220" y1="514" x2="220" y2="526" stroke="#DC2626" stroke-width="1.5"/>
-  <line x1="295" y1="514" x2="295" y2="526" stroke="#DC2626" stroke-width="1.5"/>
-  <text x="257" y="545" font-size="14" fill="#DC2626" text-anchor="middle">|EC| = 50</text>
+  <line x1="220" y1="420" x2="220" y2="470" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
+  <line x1="295" y1="420" x2="295" y2="470" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
+  <line x1="220" y1="470" x2="295" y2="470" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="220" y1="464" x2="220" y2="476" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="295" y1="464" x2="295" y2="476" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="257" y="495" font-size="14" fill="#DC2626" text-anchor="middle">|EC| = 50</text>
 
   <!-- 判定 -->
-  <text x="430" y="428" font-size="15" fill="#374151">|EC| = 50 > r = 40</text>
-  <text x="430" y="462" font-size="18" fill="#DC2626" font-weight="bold">✕ 外れ</text>
-  <text x="430" y="496" font-size="13" fill="#6B7280">※ d = 0 でも当たりにしない</text>
+  <text x="430" y="378" font-size="15" fill="#374151">|EC| = 50 > r = 40</text>
+  <text x="430" y="412" font-size="18" fill="#DC2626" font-weight="bold">✕ 外れ</text>
+  <text x="430" y="446" font-size="13" fill="#6B7280">※ d = 0 でも当たりにしない</text>
 
   <!-- ============ ケース3 ============ -->
   <line x1="40" y1="570" x2="620" y2="570" stroke="#E5E7EB" stroke-width="2"/>
   <text x="50" y="600" font-size="17" fill="#1F2937" font-weight="bold">ケース3:端の外側でも、半径が届く</text>
-  <text x="50" y="624" font-size="12.5" fill="#6B7280" font-family="Menlo,monospace">isHitSegmentCircle(s, e, vec(150, 0), 60) → true</text>
 
   <!-- 延長線 -->
-  <line x1="220" y1="745" x2="400" y2="745" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
+  <line x1="220" y1="720" x2="400" y2="720" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="7 6"/>
 
   <!-- 円 C(150,0) r=60 -->
-  <circle cx="295" cy="745" r="90" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
-  <circle cx="295" cy="745" r="4" fill="#EA580C"/>
-  <text x="295" y="727" font-size="14" fill="#EA580C" text-anchor="middle">C(150, 0)</text>
+  <circle cx="295" cy="720" r="90" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="295" cy="720" r="4" fill="#EA580C"/>
+  <text x="295" y="702" font-size="14" fill="#EA580C" text-anchor="middle">C(150, 0)</text>
 
   <!-- 線分 -->
-  <line x1="70" y1="745" x2="220" y2="745" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="70" cy="745" r="4.5" fill="#334155"/>
-  <circle cx="220" cy="745" r="4.5" fill="#334155"/>
-  <text x="70" y="770" font-size="14" fill="#1F2937" text-anchor="middle">S(0, 0)</text>
-  <text x="158" y="770" font-size="14" fill="#1F2937" text-anchor="middle">E(100, 0)</text>
+  <line x1="70" y1="720" x2="220" y2="720" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="70" cy="720" r="4.5" fill="#334155"/>
+  <circle cx="220" cy="720" r="4.5" fill="#334155"/>
+  <text x="70" y="745" font-size="14" fill="#1F2937" text-anchor="middle">S(0, 0)</text>
+  <text x="158" y="745" font-size="14" fill="#1F2937" text-anchor="middle">E(100, 0)</text>
 
   <!-- |EC| の寸法線 -->
-  <line x1="220" y1="745" x2="220" y2="795" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
-  <line x1="295" y1="745" x2="295" y2="795" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
-  <line x1="220" y1="795" x2="295" y2="795" stroke="#DC2626" stroke-width="1.5"/>
-  <line x1="220" y1="789" x2="220" y2="801" stroke="#DC2626" stroke-width="1.5"/>
-  <line x1="295" y1="789" x2="295" y2="801" stroke="#DC2626" stroke-width="1.5"/>
-  <text x="212" y="800" font-size="14" fill="#DC2626" text-anchor="end">|EC| = 50</text>
+  <line x1="220" y1="720" x2="220" y2="770" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
+  <line x1="295" y1="720" x2="295" y2="770" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 3"/>
+  <line x1="220" y1="770" x2="295" y2="770" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="220" y1="764" x2="220" y2="776" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="295" y1="764" x2="295" y2="776" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="212" y="775" font-size="14" fill="#DC2626" text-anchor="end">|EC| = 50</text>
 
   <!-- 判定 -->
-  <text x="430" y="703" font-size="15" fill="#374151">|EC| = 50 ≤ r = 60</text>
-  <text x="430" y="737" font-size="18" fill="#16A34A" font-weight="bold">○ 当たり</text>
+  <text x="430" y="678" font-size="15" fill="#374151">|EC| = 50 ≤ r = 60</text>
+  <text x="430" y="712" font-size="18" fill="#16A34A" font-weight="bold">○ 当たり</text>
 </svg>

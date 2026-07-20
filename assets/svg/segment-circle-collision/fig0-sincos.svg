@@ -1,13 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="680" viewBox="0 0 700 340" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="490" viewBox="30 100 650 245" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
   <defs>
     <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563EB"/>
     </marker>
   </defs>
-  <rect x="0" y="0" width="700" height="340" fill="#ffffff"/>
+  <rect x="30" y="100" width="650" height="245" fill="#ffffff"/>
 
   <!-- ===== 左パネル ===== -->
-  <text x="60" y="46" font-size="17" fill="#1F2937" font-weight="bold">斜めの長さ L を「横」と「縦」に分ける</text>
 
   <!-- 床 -->
   <line x1="40" y1="270" x2="330" y2="270" stroke="#6B7280" stroke-width="2"/>
@@ -38,10 +37,9 @@
   <text x="281" y="205" font-size="16" fill="#374151">縦:L sinθ</text>
 
   <!-- パネル区切り -->
-  <line x1="355" y1="28" x2="355" y2="295" stroke="#D1D5DB" stroke-width="2"/>
+  <line x1="355" y1="112" x2="355" y2="295" stroke="#D1D5DB" stroke-width="2"/>
 
   <!-- ===== 右パネル ===== -->
-  <text x="390" y="46" font-size="17" fill="#1F2937" font-weight="bold">90° を超えると「横」はマイナス</text>
 
   <!-- 床 -->
   <line x1="390" y1="270" x2="670" y2="270" stroke="#6B7280" stroke-width="2"/>

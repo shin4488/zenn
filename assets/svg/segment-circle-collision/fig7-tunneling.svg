@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="910" viewBox="0 0 640 455" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <defs>
+    <marker id="arrowGray7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9CA3AF"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="640" height="455" fill="#ffffff"/>
+
+  <!-- ===== 上段:点で判定 ===== -->
+  <text x="50" y="42" font-size="16" fill="#1F2937" font-weight="bold">点で判定</text>
+
+  <!-- 弾道(破線) -->
+  <line x1="132" y1="135" x2="524" y2="135" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrowGray7)"/>
+
+  <!-- 敵の円 -->
+  <circle cx="330" cy="135" r="50" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <text x="330" y="141" font-size="14" fill="#EA580C" text-anchor="middle">敵</text>
+
+  <!-- 弾の位置 -->
+  <circle cx="120" cy="135" r="6" fill="#334155"/>
+  <text x="120" y="168" font-size="13" fill="#1F2937" text-anchor="middle">前のフレームの弾</text>
+  <circle cx="540" cy="135" r="6" fill="#334155"/>
+  <text x="540" y="168" font-size="13" fill="#1F2937" text-anchor="middle">現在のフレームの弾</text>
+
+  <!-- 判定 -->
+  <text x="330" y="207" font-size="14.5" fill="#DC2626" text-anchor="middle">✕ どの時点でも点は円の外 → すり抜け</text>
+
+  <!-- 区切り -->
+  <line x1="40" y1="240" x2="600" y2="240" stroke="#E5E7EB" stroke-width="2"/>
+
+  <!-- ===== 下段:線分で判定 ===== -->
+  <text x="50" y="282" font-size="16" fill="#1F2937" font-weight="bold">線分で判定</text>
+
+  <!-- 移動区間の線分 -->
+  <line x1="120" y1="360" x2="540" y2="360" stroke="#2563EB" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 敵の円 -->
+  <circle cx="330" cy="360" r="50" fill="#F97316" fill-opacity="0.09" stroke="#EA580C" stroke-width="2.5"/>
+  <text x="330" y="345" font-size="14" fill="#EA580C" text-anchor="middle">敵</text>
+
+  <!-- 弾の位置 -->
+  <circle cx="120" cy="360" r="6" fill="#334155"/>
+  <text x="120" y="393" font-size="13" fill="#1F2937" text-anchor="middle">前のフレームの弾</text>
+  <circle cx="540" cy="360" r="6" fill="#334155"/>
+  <text x="540" y="393" font-size="13" fill="#1F2937" text-anchor="middle">現在のフレームの弾</text>
+
+  <!-- 判定 -->
+  <text x="330" y="433" font-size="14.5" fill="#16A34A" text-anchor="middle">○ 線分が円と重なる → 当たり</text>
+</svg>
