@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="480" viewBox="0 0 660 240" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="660" height="240" fill="#ffffff"/>
+
+  <!-- ===== パネル1:レーザー ===== -->
+  <text x="125" y="48" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">レーザー</text>
+
+  <!-- 星 -->
+  <circle cx="60" cy="92" r="1.8" fill="#CBD5E1"/>
+  <circle cx="130" cy="72" r="1.5" fill="#CBD5E1"/>
+  <circle cx="205" cy="95" r="1.8" fill="#CBD5E1"/>
+  <circle cx="95" cy="205" r="1.5" fill="#CBD5E1"/>
+  <circle cx="175" cy="215" r="1.8" fill="#CBD5E1"/>
+
+  <!-- 噴射炎 -->
+  <polygon points="24,165 38,157 38,173" fill="#F59E0B"/>
+  <polygon points="30,165 38,160 38,170" fill="#FDE68A"/>
+
+  <!-- 自機 -->
+  <polygon points="38,150 38,180 72,165" fill="#475569"/>
+  <circle cx="52" cy="165" r="4" fill="#93C5FD"/>
+
+  <!-- レーザー(線分・光彩つき) -->
+  <line x1="72" y1="165" x2="170" y2="165" stroke="#BFDBFE" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+  <line x1="72" y1="165" x2="170" y2="165" stroke="#2563EB" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 敵(円) -->
+  <circle cx="192" cy="165" r="24" fill="#F97316" fill-opacity="0.15" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="186" cy="161" r="2.5" fill="#7C2D12"/>
+  <circle cx="198" cy="161" r="2.5" fill="#7C2D12"/>
+  <line x1="187" y1="172" x2="197" y2="172" stroke="#7C2D12" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- ヒットの火花 -->
+  <line x1="167" y1="154" x2="161" y2="146" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+  <line x1="164" y1="165" x2="155" y2="165" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+  <line x1="167" y1="176" x2="161" y2="184" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 区切り -->
+  <line x1="235" y1="60" x2="235" y2="215" stroke="#E5E7EB" stroke-width="2"/>
+
+  <!-- ===== パネル2:剣 ===== -->
+  <text x="345" y="48" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">剣</text>
+
+  <!-- 地面 -->
+  <line x1="255" y1="198" x2="435" y2="198" stroke="#E2E8F0" stroke-width="2"/>
+
+  <!-- キャラクター -->
+  <circle cx="280" cy="140" r="8" fill="#64748B"/>
+  <line x1="280" y1="148" x2="280" y2="178" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+  <line x1="280" y1="178" x2="272" y2="196" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+  <line x1="280" y1="178" x2="288" y2="196" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+  <line x1="280" y1="156" x2="293" y2="152" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- 振りの軌跡 -->
+  <path d="M 310 95 A 70 70 0 0 1 356 138" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="5 5"/>
+
+  <!-- 剣:柄・鍔・刃 -->
+  <line x1="288" y1="156" x2="301" y2="146" stroke="#92400E" stroke-width="4" stroke-linecap="round"/>
+  <line x1="296.8" y1="140.4" x2="305.2" y2="151.6" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+  <polygon points="302.8,148.4 299.2,143.6 346,112" fill="#2563EB"/>
+
+  <!-- 敵(円) -->
+  <circle cx="362" cy="105" r="22" fill="#F97316" fill-opacity="0.15" stroke="#EA580C" stroke-width="2.5"/>
+  <circle cx="357" cy="101" r="2.5" fill="#7C2D12"/>
+  <circle cx="368" cy="101" r="2.5" fill="#7C2D12"/>
+  <line x1="358" y1="112" x2="368" y2="112" stroke="#7C2D12" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- ヒットの火花 -->
+  <line x1="341" y1="104" x2="335" y2="96" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+  <line x1="337" y1="115" x2="328" y2="119" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 区切り -->
+  <line x1="455" y1="60" x2="455" y2="215" stroke="#E5E7EB" stroke-width="2"/>
+
+  <!-- ===== パネル3:ブロック崩し ===== -->
+  <text x="560" y="48" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">ブロック崩し</text>
+
+  <!-- ブロック -->
+  <rect x="480" y="66" width="50" height="16" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+  <rect x="535" y="66" width="50" height="16" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+  <rect x="590" y="66" width="50" height="16" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+
+  <!-- ボールの軌道 -->
+  <line x1="600" y1="120" x2="566" y2="180" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="5 5"/>
+
+  <!-- ボール(円) -->
+  <circle cx="560" cy="192" r="14" fill="#F97316" fill-opacity="0.15" stroke="#EA580C" stroke-width="2.5"/>
+
+  <!-- パドル(線分) -->
+  <line x1="515" y1="210" x2="605" y2="210" stroke="#2563EB" stroke-width="6" stroke-linecap="round"/>
+</svg>
