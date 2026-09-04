@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="600" viewBox="0 0 760 300" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="760" height="300" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowG" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9CA3AF"/>
+    </marker>
+  </defs>
+
+  <!-- 行ラベル -->
+  <text x="20" y="96" font-size="14" fill="#1F2937">Airflow上の状態</text>
+  <text x="20" y="178" font-size="14" fill="#1F2937">動作中の合図</text>
+  <text x="20" y="196" font-size="11" fill="#6B7280">(ハートビート)</text>
+
+  <!-- ===== Airflow上の状態 ===== -->
+  <rect x="150" y="76" width="470" height="30" rx="6" fill="#22C55E" fill-opacity="0.18" stroke="#16A34A" stroke-width="2"/>
+  <text x="385" y="97" font-size="14" fill="#15803D" text-anchor="middle" font-weight="bold">running</text>
+  <rect x="624" y="76" width="106" height="30" rx="6" fill="#EF4444" fill-opacity="0.14" stroke="#DC2626" stroke-width="2"/>
+  <text x="677" y="97" font-size="14" fill="#DC2626" text-anchor="middle" font-weight="bold">failed</text>
+
+  <!-- ===== ハートビート(時間軸) ===== -->
+  <line x1="150" y1="180" x2="738" y2="180" stroke="#9CA3AF" stroke-width="2" marker-end="url(#arrowG)"/>
+  <!-- 脈:一定間隔で続いたあと途絶える -->
+  <g fill="none" stroke="#EA580C" stroke-width="2" stroke-linejoin="round">
+    <polyline points="157,180 161,180 164,166 168,192 171,180 173,180"/>
+    <polyline points="181,180 185,180 188,166 192,192 195,180 197,180"/>
+    <polyline points="205,180 209,180 212,166 216,192 219,180 221,180"/>
+    <polyline points="229,180 233,180 236,166 240,192 243,180 245,180"/>
+    <polyline points="253,180 257,180 260,166 264,192 267,180 269,180"/>
+    <polyline points="277,180 281,180 284,166 288,192 291,180 293,180"/>
+    <polyline points="301,180 305,180 308,166 312,192 315,180 317,180"/>
+    <polyline points="325,180 329,180 332,166 336,192 339,180 341,180"/>
+    <polyline points="349,180 353,180 356,166 360,192 363,180 365,180"/>
+    <polyline points="373,180 377,180 380,166 384,192 387,180 389,180"/>
+  </g>
+
+  <!-- 途絶えてからの経過時間 -->
+  <line x1="384" y1="208" x2="384" y2="228" stroke="#DC2626" stroke-width="2"/>
+  <line x1="384" y1="218" x2="622" y2="218" stroke="#DC2626" stroke-width="2"/>
+  <line x1="622" y1="208" x2="622" y2="228" stroke="#DC2626" stroke-width="2"/>
+  <text x="503" y="250" font-size="14" fill="#DC2626" text-anchor="middle">300秒</text>
+
+  <!-- 判定 -->
+  <line x1="622" y1="52" x2="622" y2="205" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="622" y="42" font-size="14" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
+  <text x="648" y="152" font-size="24" text-anchor="middle">👻</text>
+</svg>

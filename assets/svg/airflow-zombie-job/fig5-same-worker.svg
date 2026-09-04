@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="600" viewBox="0 0 760 300" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="760" height="300" fill="#ffffff"/>
+
+  <!-- ===== 左:同じワーカー・同時刻 ===== -->
+  <text x="190" y="44" font-size="16" fill="#1F2937" text-anchor="middle" font-weight="bold">同じワーカー・同時刻</text>
+  <rect x="60" y="66" width="260" height="200" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <text x="80" y="88" font-size="12" fill="#6B7280">ワーカー</text>
+
+  <!-- DAG A -->
+  <rect x="85" y="100" width="120" height="36" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+  <text x="145" y="123" font-size="13" fill="#1D4ED8" text-anchor="middle">DAG A</text>
+  <text x="228" y="126" font-size="20" text-anchor="middle">👻</text>
+  <circle cx="275" cy="118" r="12" fill="#ffffff" stroke="#DC2626" stroke-width="2"/>
+  <line x1="275" y1="118" x2="275" y2="109" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+  <line x1="275" y1="118" x2="282" y2="118" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- DAG B -->
+  <rect x="85" y="150" width="120" height="36" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+  <text x="145" y="173" font-size="13" fill="#6D28D9" text-anchor="middle">DAG B</text>
+  <text x="228" y="176" font-size="20" text-anchor="middle">👻</text>
+  <circle cx="275" cy="168" r="12" fill="#ffffff" stroke="#DC2626" stroke-width="2"/>
+  <line x1="275" y1="168" x2="275" y2="159" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+  <line x1="275" y1="168" x2="282" y2="168" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- DAG C -->
+  <rect x="85" y="200" width="120" height="36" rx="8" fill="#CCFBF1" stroke="#0D9488" stroke-width="2"/>
+  <text x="145" y="223" font-size="13" fill="#0F766E" text-anchor="middle">DAG C</text>
+  <text x="228" y="226" font-size="20" text-anchor="middle">👻</text>
+  <circle cx="275" cy="218" r="12" fill="#ffffff" stroke="#DC2626" stroke-width="2"/>
+  <line x1="275" y1="218" x2="275" y2="209" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+  <line x1="275" y1="218" x2="282" y2="218" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- パネル区切り -->
+  <line x1="380" y1="30" x2="380" y2="275" stroke="#D1D5DB" stroke-width="2"/>
+
+  <!-- ===== 右:別ワーカー・別時刻 ===== -->
+  <text x="575" y="44" font-size="16" fill="#1F2937" text-anchor="middle" font-weight="bold">別ワーカー・別時刻</text>
+
+  <!-- ワーカー1 -->
+  <rect x="410" y="66" width="100" height="200" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <text x="422" y="88" font-size="12" fill="#6B7280">ワーカー</text>
+  <rect x="425" y="100" width="70" height="36" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+  <text x="460" y="123" font-size="13" fill="#1D4ED8" text-anchor="middle">DAG A</text>
+  <text x="448" y="168" font-size="20" text-anchor="middle">👻</text>
+  <circle cx="480" cy="160" r="12" fill="#ffffff" stroke="#DC2626" stroke-width="2"/>
+  <line x1="480" y1="160" x2="480" y2="151" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+  <line x1="480" y1="160" x2="487" y2="160" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- ワーカー2 -->
+  <rect x="525" y="66" width="100" height="200" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <text x="537" y="88" font-size="12" fill="#6B7280">ワーカー</text>
+  <rect x="540" y="150" width="70" height="36" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+  <text x="575" y="173" font-size="13" fill="#6D28D9" text-anchor="middle">DAG B</text>
+  <text x="563" y="218" font-size="20" text-anchor="middle">👻</text>
+  <circle cx="595" cy="210" r="12" fill="#ffffff" stroke="#DC2626" stroke-width="2"/>
+  <line x1="595" y1="210" x2="595" y2="201" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+  <line x1="595" y1="210" x2="589" y2="216" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- ワーカー3 -->
+  <rect x="640" y="66" width="100" height="200" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <text x="652" y="88" font-size="12" fill="#6B7280">ワーカー</text>
+  <rect x="655" y="200" width="70" height="36" rx="8" fill="#CCFBF1" stroke="#0D9488" stroke-width="2"/>
+  <text x="690" y="223" font-size="13" fill="#0F766E" text-anchor="middle">DAG C</text>
+  <text x="678" y="118" font-size="20" text-anchor="middle">👻</text>
+  <circle cx="710" cy="110" r="12" fill="#ffffff" stroke="#DC2626" stroke-width="2"/>
+  <line x1="710" y1="110" x2="710" y2="101" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+  <line x1="710" y1="110" x2="703" y2="105" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="600" viewBox="0 0 720 300" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="720" height="300" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowO" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#EA580C"/>
+    </marker>
+    <marker id="arrowB" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <!-- ===== ワーカー ===== -->
+  <text x="110" y="72" font-size="16" fill="#1F2937" text-anchor="middle" font-weight="bold">ワーカー</text>
+  <rect x="30" y="90" width="160" height="130" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <!-- タスクのプロセス -->
+  <rect x="55" y="125" width="110" height="60" rx="8" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+  <text x="110" y="161" font-size="14" fill="#EA580C" text-anchor="middle">タスク</text>
+  <circle cx="150" cy="136" r="4" fill="#16A34A"/>
+
+  <!-- 動作中の合図(ワーカー → DB) -->
+  <line x1="192" y1="155" x2="296" y2="155" stroke="#EA580C" stroke-width="2.5" marker-end="url(#arrowO)"/>
+  <polyline points="205,135 217,135 223,122 231,148 237,135 280,135" fill="none" stroke="#EA580C" stroke-width="2" stroke-linejoin="round"/>
+  <text x="248" y="183" font-size="13" fill="#EA580C" text-anchor="middle">動作中の合図</text>
+  <text x="248" y="199" font-size="11" fill="#EA580C" text-anchor="middle">(ハートビート)</text>
+
+  <!-- ===== メタデータDB ===== -->
+  <text x="360" y="72" font-size="16" fill="#1F2937" text-anchor="middle" font-weight="bold">メタデータDB</text>
+  <path d="M305 110 v95 a55 14 0 0 0 110 0 v-95" fill="#EFF6FF" stroke="#334155" stroke-width="2.5"/>
+  <ellipse cx="360" cy="110" rx="55" ry="14" fill="#DBEAFE" stroke="#334155" stroke-width="2.5"/>
+  <!-- 最終更新時刻を表す時計 -->
+  <circle cx="360" cy="158" r="22" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+  <line x1="360" y1="158" x2="360" y2="143" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="360" y1="158" x2="371" y2="164" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="360" cy="158" r="2.5" fill="#334155"/>
+  <text x="360" y="201" font-size="11" fill="#334155" text-anchor="middle">最終更新時刻</text>
+
+  <!-- ===== Scheduler ===== -->
+  <text x="595" y="72" font-size="16" fill="#1F2937" text-anchor="middle" font-weight="bold">Scheduler</text>
+  <rect x="510" y="90" width="170" height="130" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <!-- 虫眼鏡 -->
+  <circle cx="587" cy="148" r="20" fill="#ffffff" stroke="#2563EB" stroke-width="3"/>
+  <line x1="601" y1="162" x2="619" y2="180" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- 確認(Scheduler → DB) -->
+  <line x1="508" y1="155" x2="426" y2="155" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#arrowB)"/>
+  <text x="467" y="185" font-size="13" fill="#2563EB" text-anchor="middle">時刻を確認</text>
+</svg>
