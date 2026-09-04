@@ -116,7 +116,15 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 ![切り分けの例](/images/airflow-zombie-job/fig4-window.png)
 *切り分けの例。ワーカーの再起動とメモリの上昇が検出直前に重なり、DBは正常、環境の変更は時間帯の外にある。この場合はワーカー側を疑う。各行の情報の集め方は手順2〜5で説明する*
 
-以降のコマンドの `YOUR_PROJECT_ID`、`YOUR_COMPOSER_ENVIRONMENT`、`YOUR_WORKER_NAME` は調査対象に置き換えてください。メトリクスはすべてMetrics Explorer（`https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR_PROJECT_ID`）で表示できます。
+以降のコマンドの `YOUR_PROJECT_ID`、`YOUR_COMPOSER_ENVIRONMENT`、`YOUR_WORKER_NAME` は調査対象に置き換えてください。
+
+各手順の表にある `composer.googleapis.com/...` は、Cloud Monitoringのメトリクス名です。Google Cloudコンソールの Monitoring → Metrics Explorer（`https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR_PROJECT_ID`）を開き、「指標を選択」の検索欄にこの名前を貼り付けるとグラフが表示されます。アラートやダッシュボードにも同じ名前で使えます。名前の先頭で対象が分かれます。
+
+| 名前の先頭 | 対象 | 絞り込み |
+|---|---|---|
+| `environment/` | 環境全体の値（リソース: Cloud Composer Environment） | `environment_name` |
+| `workload/` | ワーカーなど個々の実体ごとの値（リソース: Cloud Composer Workload） | `environment_name` と `workload_name`（ワーカー名） |
+| `workflow/` | DAG・タスクごとの値 | `environment_name` と DAG・タスクの名前 |
 
 ### 1. 同じワーカーに集中していないか
 
