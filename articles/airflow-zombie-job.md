@@ -12,11 +12,17 @@ Airflowを運用していると、Schedulerのログに `Detected zombie job` �
 
 ## ゾンビタスクが検出される仕組み
 
-原因を探す前に、Airflowが何を根拠にゾンビと判定しているのかを確認しておきます。判定の根拠が分かれば、その根拠が崩れる状況がそのまま原因候補になるからです。
+先に、Airflowがどんな条件でタスクをゾンビと判定するのかを見ておきます。原因を探すときは、この条件に当てはまる状況を順に確かめていくことになります。
 
-登場するのは3つです。タスクを実行する**ワーカー**、タスクの状態を保存する**メタデータDB**、そしてDAGの実行タイミングを決めてタスクをワーカーに割り当てる**Scheduler**です。ゾンビタスクの検出もSchedulerの仕事です。
+登場するのは次の3つです。
 
-Airflowでは、タスクを実行しているプロセスが、既定では5秒おきにメタデータDBの「最終更新時刻」を現在時刻に書き換えます。これが「まだ動いている」という合図で、心拍のように一定の間隔で打ち続けることから**ハートビート**と呼ばれています。この記事でも、以降はこの合図をハートビートと書きます。
+| 登場するもの | 役割 |
+|---|---|
+| ワーカー | タスクを実行する |
+| メタデータDB | タスクの状態を保存する |
+| Scheduler | DAGの実行タイミングを決めて、タスクをワーカーに割り当てる。<br>ゾンビタスクの検出も担当する |
+
+ワーカーでタスクを実行しているプロセスは、既定では5秒おきにメタデータDBの「最終更新時刻」を現在時刻に書き換えます。これが「まだ動いている」という合図で、心拍のように一定間隔で打ち続けることから**ハートビート**と呼ばれます。以降はこの合図をハートビートと書きます。
 
 ![ワーカー・メタデータDB・Schedulerの関係](/images/airflow-zombie-job/fig1-heartbeat.png)
 *① ワーカーは5秒おきに現在時刻をDBに書き込む。② その時刻がタスクの最終更新時刻として残る。③ Schedulerはワーカーを直接見ず、この時刻を読んで、最近更新されていれば動いていると判断する*
@@ -26,12 +32,12 @@ Schedulerはワーカーを直接監視しているわけではなく、DBに残
 - タスクを実行しているジョブが `running` ではなくなっている
 - 最終更新時刻から一定時間（既定で300秒）が過ぎている
 
-判定されたタスクは失敗になります。再試行の設定があれば再試行されます。
+ゾンビ判定されたタスクは失敗になります。再試行の設定があれば再試行されます。
 
 ![ハートビートが止まってからゾンビと判定されるまで](/images/airflow-zombie-job/fig2-timeline.png)
 *上:ハートビートが止まっても、DBの状態は running のまま最終更新時刻だけが古くなる。Schedulerは「今」との差が300秒を超えたのを見てゾンビと判定し、failed にする。下:同じ流れを時間軸で見たもの*
 
-関係する設定は次の3つです。いずれもAirflowの設定ファイル `airflow.cfg` の `[scheduler]` セクションにある項目で、Google CloudのマネージドAirflowでは環境の設定画面にある「Airflow構成のオーバーライド」で、セクション `scheduler` とキー名を指定して変更します。現在の値はAirflow画面の Admin → Configurations で確認できます（管理者が非表示にしている環境もあります）。
+ゾンビ判定に関係する設定は、設定ファイル `airflow.cfg` の `[scheduler]` セクションにあります。現在の値はAirflow画面の Admin → Configurations で確認でき（管理者が非表示にしている環境もあります）、Google CloudのマネージドAirflowでは環境の設定画面の「Airflow構成のオーバーライド」で変更できます。関係するのは次の3つです。
 
 | 設定 | 既定値 | 意味 |
 |---|---|---|
@@ -39,13 +45,11 @@ Schedulerはワーカーを直接監視しているわけではなく、DBに残
 | `scheduler_zombie_task_threshold` | 300秒 | 最終更新時刻からこの時間が過ぎたらゾンビとみなす |
 | `zombie_detection_interval` | 10秒 | Schedulerがゾンビを探す間隔 |
 
-ここで押さえておきたいのは、ゾンビタスクは原因の名前ではなく「ハートビートが途絶えた（最終更新時刻が書き換えられなくなった）」という結果だということです。途絶えた理由は複数考えられ、`Detected zombie job` のログにはどれなのか書かれていません。
+ゾンビタスクは原因の名前ではなく、「ハートビートが途絶えた（最終更新時刻が書き換えられなくなった）」という結果です。途絶えた理由は複数考えられ、`Detected zombie job` のログにはどれなのか書かれていません。
 
 ## 発生を確認する
 
-### Schedulerログを検索する
-
-Google Cloudでは、Schedulerのログを `Detected zombie job` で検索します。[公式のトラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#zombie-tasks)にも同じ検索条件が載っています。時刻はUTCで指定します。
+Google Cloudでは、Schedulerのログを `Detected zombie job` で検索します（[公式のトラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#zombie-tasks)）。
 
 ```shell
 gcloud logging read 'resource.type="cloud_composer_environment"
@@ -59,19 +63,6 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
   --limit=1000 \
   --format='value(timestamp,textPayload)'
 ```
-
-1件も見つからないときは、「発生していない」のか「ログの保持期間を過ぎている」のかを区別してください。保持日数は次のコマンドで確認できます。
-
-```shell
-gcloud logging buckets describe _Default \
-  --location=global \
-  --project=YOUR_PROJECT_ID \
-  --format='value(retentionDays)'
-```
-
-期間全体の傾向を見たいときは、ゾンビとして停止したタスク数のメトリクス `composer.googleapis.com/environment/zombie_task_killed_count` をMetrics Explorerで表示すると早いです。メトリクスの一覧は[公式の監視ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/monitor-environments)にあります。
-
-### ログから対象を読み取る
 
 ログ本文の `msg` に、どのタスクがどのワーカーで動いていたかがそのまま書かれています。
 
@@ -88,22 +79,33 @@ Detected zombie job: {'full_filepath': '/home/airflow/gcs/dags/sample_dag.py', .
 | Run Id | 同じDAGの別の実行と区別する |
 | Hostname | 実行していたワーカー。複数のタスクが同じワーカーに集中していないかを見る |
 
+ログが1件も見つからないときは、「発生していない」か「ログの保持期間を過ぎている」可能性があります。保持日数は次のコマンドで確認できます。
+
+```shell
+gcloud logging buckets describe _Default \
+  --location=global \
+  --project=YOUR_PROJECT_ID \
+  --format='value(retentionDays)'
+```
+
+期間全体の傾向を見たいときは、ゾンビとして停止したタスク数のメトリクス `composer.googleapis.com/environment/zombie_task_killed_count` を使ってMetrics Explorerで表示できます（メトリクス一覧: [公式の監視ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/monitor-environments)）。
+
 ## ハートビートが途絶える原因
 
 ![正常時と、ハートビートが途絶える2つの場合の比較](/images/airflow-zombie-job/fig3-causes.png)
-*上:合図が届き続けるのでDBの最終更新時刻が更新され、正常と判断される。中:プロセスが消えて合図が送られなくなる。下:プロセスは動いているが合図がDBに届かない。中と下はどちらも最終更新時刻が古いままになり、ゾンビと判定される*
+*上:書き込みが続くので最終更新時刻が更新され、正常と判断される。中:プロセスが止まって書き込みも止まる。下:プロセスは動いているがDBに書き込めない。中と下はどちらも最終更新時刻が古いままになり、ゾンビと判定される*
 
-ハートビートが途絶える経路は大きく2つあります。プロセス自体が消えた場合と、プロセスは動いているのに合図がDBに届かない場合です。原因候補を経路ごとに整理すると次のようになります。
+ハートビートが途絶える経路は大きく2つあります。プロセスが止まった場合と、プロセスは動いているのに現在時刻をDBに書き込めない場合です。原因候補を経路ごとに整理すると次のようになります。
 
 | 経路 | 原因 | 主な手がかり |
 |---|---|---|
-| プロセスが消えた | メモリ不足による強制終了 | ワーカーログの `Negsignal.SIGKILL`、メモリ使用率 |
-| プロセスが消えた | ワーカーの再起動 | ワーカーの再起動回数 |
-| プロセスが消えた | ワーカーの退避・縮小・環境更新 | Podの退避回数、ワーカー数の推移、監査ログ |
-| 合図が届かない | ワーカーの高負荷 | CPU・メモリ使用率、同時実行数 |
-| 合図が届かない | メタデータDBの高負荷・停止 | DBの正常性、CPU・メモリ使用率 |
-| 合図が届かない | ネットワーク障害 | 接続エラー、ワーカーログの `Heartbeat time limit exceeded` |
-| 設定 | 判定までの時間が短すぎる | 300秒を超える一時的な遅れが繰り返し起きている |
+| プロセスが止まる | メモリ不足による強制終了 | ワーカーログの `Negsignal.SIGKILL`、メモリ使用率 |
+| プロセスが止まる | ワーカーの再起動 | ワーカーの再起動回数 |
+| プロセスが止まる | ワーカーの退避・縮小・環境更新・メンテナンス | Podの退避回数、ワーカー数の推移、監査ログ、メンテナンスのメトリクス |
+| DBに書き込めない | ワーカーの高負荷 | CPU・メモリ使用率、同時実行数 |
+| DBに書き込めない | メタデータDBの高負荷・停止 | DBの正常性、CPU・メモリ使用率 |
+| DBに書き込めない | ネットワーク障害 | 接続エラー、ワーカーログの `Heartbeat time limit exceeded` |
+| DBに書き込めない（一時的） | 一時的な遅れに対して判定までの時間が短い | 回復しているのに繰り返しゾンビになる。ワーカーログに `Heartbeat time limit exceeded` が繰り返し出る |
 
 Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/monitor-key-metrics)では、最も多い原因はワーカーのCPU・メモリ不足とされています。そのため、次の手順もワーカーから見ていきます。
 
@@ -118,34 +120,40 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 
 以降のコマンドの `YOUR_PROJECT_ID`、`YOUR_COMPOSER_ENVIRONMENT`、`YOUR_WORKER_NAME` は調査対象に置き換えてください。
 
-各手順の表にある `composer.googleapis.com/...` は、Cloud Monitoringのメトリクス名です。Google Cloudコンソールの Monitoring → Metrics Explorer（`https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR_PROJECT_ID`）を開き、「指標を選択」の検索欄にこの名前を貼り付けるとグラフが表示されます。アラートやダッシュボードにも同じ名前で使えます。名前の先頭で対象が分かれます。
+各手順の表にある `composer.googleapis.com/...` は、Cloud Monitoringのメトリクス名です。Google Cloudコンソールの Monitoring → Metrics Explorer（`https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR_PROJECT_ID`）を開き、「指標を選択」の検索欄にこの名前を貼り付けるとグラフが表示されます。名前の先頭で対象が分かれます。
 
-| 名前の先頭 | 対象 | 絞り込み |
+| 名前の先頭 | 対象（Metrics Explorerで選ぶリソースの種類） | 絞り込み |
 |---|---|---|
-| `environment/` | 環境全体の値（リソース: Cloud Composer Environment） | `environment_name` |
-| `workload/` | ワーカーなど個々の実体ごとの値（リソース: Cloud Composer Workload） | `environment_name` と `workload_name`（ワーカー名） |
-| `workflow/` | DAG・タスクごとの値（リソース: Cloud Composer Workflow） | `workflow_name`（DAG名）と `task_id` |
+| `environment/` | 環境全体の値（Cloud Composer Environment） | `environment_name` |
+| `workload/` | ワーカーなど個々の実体ごとの値（Cloud Composer Workload） | `environment_name` と `workload_name`（ワーカー名） |
+| `workflow/` | DAG・タスクごとの値（Cloud Composer Workflow） | `workflow_name`（DAG名）と `task_id` |
 
-### 1. 同じワーカーに集中していないか
+### 1. 発生時刻・ワーカー・タスクの傾向を見る
 
-最初に、先ほど読み取ったログの時刻と Hostname を並べて見比べます。
+最初に、[発生を確認する](#発生を確認する)で取得したログを、時刻・Hostname・DAG Id・Task Idで並べて見比べます。
 
-![同じワーカーに集中している場合とばらばらの場合](/images/airflow-zombie-job/fig5-same-worker.png)
-*左:複数のDAGのゾンビが同じワーカー・同じ時間帯に集中している。右:ワーカーも時間帯もばらばら。並べ方が違うだけで、疑う対象が変わる*
+![ゾンビタスクの発生パターンと調査対象](/images/airflow-zombie-job/fig5-same-worker.png)
+*ログを時刻・Hostname・DAG Id・Task Idで並べると傾向が見える。傾向によって、次に調べる対象が変わる。傾向は原因を確定する証拠ではなく、調査の順番を決める手がかり*
 
-複数のDAGのタスクが同じワーカーでほぼ同時にゾンビになっていれば、個々のタスクではなく、そのワーカー自体の再起動やリソース不足を疑います。ワーカーも時刻もばらばらなら、タスク固有の問題か、DBやネットワークなど環境全体の問題に目を向けます。
+傾向によって、次に調べる対象が変わります。ただし、傾向だけで原因は確定できません。同じワーカーに集中していても、再起動やリソース不足の記録がなければ別の原因の可能性があります。
 
-ただし、ここで分かるのは「同じワーカーに割り当てられていた」ことまでです。どのタスクが負荷をかけたのか、あるタスクが原因でほかのタスクまで止まったのかは、次の手順で確かめます。
+| ログの傾向 | 次に調べる対象 |
+|---|---|
+| 同じワーカー・近い時刻に集中 | そのワーカーの再起動やリソース不足 |
+| 複数のワーカー・近い時刻に集中 | DB、ネットワーク、環境更新などの共通要因 |
+| 同じDAG・Taskで繰り返す | タスク固有のCPU・メモリ消費や処理内容 |
 
 ### 2. ワーカーの再起動・退避
 
 | 確認対象 | メトリクス・ログ |
 |---|---|
-| ワーカーの再起動回数 | `composer.googleapis.com/workload/restart_count` |
-| Podの退避回数 | `composer.googleapis.com/environment/worker/pod_eviction_count` |
+| ワーカーごとの再起動回数 | `composer.googleapis.com/workload/restart_count` |
+| 環境全体のワーカーPod退避回数 | `composer.googleapis.com/environment/worker/pod_eviction_count` |
 | 強制終了・停止の記録 | ワーカーログの `Negsignal.SIGKILL`、`Received SIGTERM` |
 
-ワーカーログは次のコマンドで検索します。手順6で使う `Heartbeat time limit exceeded` も一緒に探しています。`Negsignal.SIGKILL` と `Received SIGTERM` の意味は、Google Cloudの[トラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#sigterm)に説明があります。
+再起動回数はワーカーごとに分かるので、ゾンビログの Hostname にあたるワーカーを `workload_name` で指定します。退避回数は環境全体の値で、どのワーカーが退避されたかは分からないため、退避があった時刻のワーカーログと照合します。
+
+ワーカーログは次のコマンドで検索します。手順6で使う `Heartbeat time limit exceeded` も一緒に探しています。`Negsignal.SIGKILL` と `Received SIGTERM` の意味は、Google Cloudの[トラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#sigterm)に説明があります。出力に `labels` を含めているので、どのDAG・タスクのログかをゾンビログの DAG Id・Task Id と突き合わせられます。
 
 ```shell
 gcloud logging read 'resource.type="cloud_composer_environment"
@@ -159,23 +167,23 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
   --project=YOUR_PROJECT_ID \
   --order=asc \
   --limit=1000 \
-  --format='value(timestamp,textPayload)'
+  --format='value(timestamp,labels,textPayload)'
 ```
 
-検出の直前に同じワーカーの再起動や退避があれば、プロセスが失われたことが直接の要因です。ただし再起動の回数だけでは「なぜ再起動したのか」までは分からないので、次のメモリ・CPUと合わせて見ます。
+検出の直前に同じワーカーの再起動や退避があれば、その再起動・退避でタスクのプロセスが失われたと判断できます。再起動の理由は回数からは分からないので、次のメモリ・CPUで確かめます。
 
 ### 3. ワーカーのメモリ・CPU
 
-| 確認対象 | メトリクス・設定 |
-|---|---|
-| メモリ使用量 | `composer.googleapis.com/workload/memory/bytes_used` |
-| メモリ上限 | `composer.googleapis.com/workload/memory/quota` |
-| CPU使用時間 | `composer.googleapis.com/workload/cpu/usage_time` |
-| タスクごとのCPU使用率 | `composer.googleapis.com/workflow/task/cpu_usage` |
-| タスクごとのメモリ使用率 | `composer.googleapis.com/workflow/task/mem_usage` |
-| 同時実行数の上限 | Airflow設定の `[celery] worker_concurrency` |
+| 対象 | 確認対象 | メトリクス・設定 |
+|---|---|---|
+| ワーカー全体 | メモリ使用量 | `composer.googleapis.com/workload/memory/bytes_used` |
+| ワーカー全体 | メモリ上限 | `composer.googleapis.com/workload/memory/quota` |
+| ワーカー全体 | CPU使用時間 | `composer.googleapis.com/workload/cpu/usage_time` |
+| タスクごと | CPU使用率 | `composer.googleapis.com/workflow/task/cpu_usage` |
+| タスクごと | メモリ使用率 | `composer.googleapis.com/workflow/task/mem_usage` |
+| 設定 | 同時実行数の上限 | Airflow設定の `[celery] worker_concurrency` |
 
-メモリは使用量そのものではなく、上限に対する割合で見ます。Metrics Explorerのクエリ言語に **PromQL** を選び、次のクエリを実行すると使用率（%）がそのまま表示されます。メトリクス名は[PromQLでの書き方](https://docs.cloud.google.com/monitoring/promql/promql-mapping)に従って、`.` と `/` を `_` に置き換えています。
+ワーカー全体のメモリは、使用量そのものではなく上限に対する割合で見ます。上の2つのメトリクスから割合を出すには、Metrics Explorerのクエリ言語に **PromQL** を選び、次のクエリを実行します（参考: [PromQLでの書き方](https://docs.cloud.google.com/monitoring/promql/promql-mapping)）。使用率（%）がそのまま表示されます。
 
 ```promql
 100 *
@@ -192,13 +200,17 @@ composer_googleapis_com:workload_memory_quota{
 }
 ```
 
-見るときの注意点は次のとおりです。
+見るときのポイントは3つです。
 
-- 全ワーカーの合計ではなく、ゾンビになったタスクを実行していたワーカー（ログの Hostname）を指定する
-- メトリクスは60秒間隔で記録されるため、短時間の急上昇は取りこぼす。検出前後の最大値を見る
-- 80%を超える状態が続き、同じ時間帯に再起動や `Negsignal.SIGKILL` があれば、メモリ不足を有力な候補とする
+| ポイント | 理由 |
+|---|---|
+| ゾンビになったタスクを実行していたワーカー（ログの Hostname）だけを指定する | 全ワーカーの合計だと、1台の逼迫が薄まって見えない |
+| 検出前後の最大値を見る | メトリクスは60秒間隔なので、短時間の急上昇を取りこぼす |
+| 80%超が続き、同じ時間帯に再起動や `Negsignal.SIGKILL` があれば、メモリ不足を有力な候補とする | 使用率だけでは、強制終了されたかどうかは分からない |
 
-`worker_concurrency` は1台のワーカーが同時に実行できるタスク数の上限であって、その数を安定して処理できるという保証ではありません。同じ時間帯に動いていたタスク数と、1タスクあたりの負荷を合わせて見ます。
+タスクごとのCPU・メモリ使用率は最初から割合（%）なので、そのまま見られます。同じ時間帯に動いていたタスクのうち、どれが多く使っていたかを比べるのに使います。
+
+同時実行数の上限 `worker_concurrency` は「同時に走らせてよい数」であって、「安定して処理できる数」ではありません。同じ時間帯に動いていたタスク数と、1タスクあたりの負荷を合わせて見ます。
 
 ### 4. メタデータDB
 
@@ -210,11 +222,19 @@ composer_googleapis_com:workload_memory_quota{
 | CPU使用率 | `composer.googleapis.com/environment/database/cpu/utilization` |
 | メモリ使用率 | `composer.googleapis.com/environment/database/memory/utilization` |
 
-検出時刻にDBが正常で使用率も低ければ、DBが原因である可能性は下がります。
+`database_health` は、監視用のPodが1分ごとにDBへ接続できたかを表す値なので、正常でも短い遅延や一部の接続失敗までは否定できません。CPU・メモリ使用率と接続エラーも合わせて見て、どれにも異常がなければDBが原因である可能性は下がります。
 
 ### 5. 環境の変更・メンテナンス
 
-環境の更新やパッケージのインストール中はワーカーが入れ替わります。実行中のタスクが猶予時間内に終わらないと中断され、ゾンビとして検出されます。環境の変更は監査ログで確認できます。`log_id` の引数はURLエンコードせずに書きます（エンコードすると一致しなくなることが[クエリ言語の仕様](https://docs.cloud.google.com/logging/docs/view/logging-query-language#log_id)に書かれています）。
+環境の更新やパッケージのインストール中はワーカーが入れ替わります。実行中のタスクが猶予時間内に終わらないと中断され、ゾンビとして検出されます。ワーカーが入れ替わる操作は、バージョン更新、PyPIパッケージの変更、Airflow構成のオーバーライドや環境変数の変更、ワーカーのCPU・メモリ・ストレージの変更などです（[公式ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/update-environments#updates-restart)）。
+
+| 確認対象 | メトリクス・ログ |
+|---|---|
+| 環境の更新・パッケージの変更 | 監査ログ |
+| メンテナンスの実施 | `composer.googleapis.com/environment/maintenance_operation` |
+| 自動スケールによるワーカー数の増減 | `composer.googleapis.com/environment/num_celery_workers` |
+
+監査ログは次のコマンドで検索します。`log_id` の引数はURLエンコードせずに書きます（エンコードすると一致しなくなることが[クエリ言語の仕様](https://docs.cloud.google.com/logging/docs/view/logging-query-language#log_id)に書かれています）。
 
 ```shell
 gcloud logging read 'resource.type="cloud_composer_environment"
@@ -227,8 +247,6 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
   --limit=1000 \
   --format='value(timestamp,protoPayload.methodName)'
 ```
-
-自動スケールでワーカーが減っていないかは、ワーカー数のメトリクス `composer.googleapis.com/environment/num_celery_workers` の推移で分かります。
 
 ### 6. 通信エラーと設定値
 
@@ -246,7 +264,7 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
 | 検出直前のワーカー再起動 | プロセスが失われた直接の要因 | 再起動の理由 | [手順2](#2.-ワーカーの再起動・退避)のワーカーログと[手順3](#3.-ワーカーのメモリ・cpu)のメモリ使用率を同じ時間帯で見る。環境更新による入れ替わりは[手順5](#5.-環境の変更・メンテナンス)の監査ログで確認する |
 | 高いメモリ使用率 | メモリ不足の可能性 | メモリ不足でプロセスが強制終了されたこと | [手順2](#2.-ワーカーの再起動・退避)のワーカーログで `Negsignal.SIGKILL` を探す。Podの退避回数も合わせて見る |
 | 複数DAGが同じワーカーで同時に検出 | そのワーカーに共通する問題の疑い | ワーカーに何が起きたか（再起動か、メモリ・CPU不足か）。どのタスクが原因か | [手順2](#2.-ワーカーの再起動・退避)で再起動・退避を確認し、[手順3](#3.-ワーカーのメモリ・cpu)でワーカー全体とタスクごとのメモリ・CPU使用率を見る |
-| エラーログがない | 該当するログを確認できなかった | エラーが起きなかったこと | 調査期間がログの保持期間内かを確認する（[Schedulerログを検索する](#schedulerログを検索する)）。Podが退避されるとログが出力されないまま失われることがあるため、[手順2](#2.-ワーカーの再起動・退避)の退避回数も見る |
+| エラーログがない | 該当するログを確認できなかった | エラーが起きなかったこと | 調査期間がログの保持期間内かを確認する（[発生を確認する](#発生を確認する)）。Podが退避されるとログが出力されないまま失われることがあるため、[手順2](#2.-ワーカーの再起動・退避)の退避回数も見る |
 
 ## Airflow 3 での変更点
 

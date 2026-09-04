@@ -14,11 +14,13 @@
   <text x="115" y="44" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">ワーカー</text>
   <rect x="30" y="54" width="170" height="140" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
   <rect x="55" y="96" width="120" height="56" rx="8" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="5 4"/>
-  <text x="115" y="134" font-size="26" fill="#9CA3AF" text-anchor="middle" font-weight="bold">?</text>
+  <text x="115" y="130" font-size="14" fill="#9CA3AF" text-anchor="middle">タスク</text>
+  <circle cx="162" cy="108" r="4" fill="#9CA3AF"/>
+  <text x="115" y="178" font-size="10.5" fill="#6B7280" text-anchor="middle">動いているか分からない</text>
 
-  <!-- ① 合図が止まる -->
+  <!-- ① 書き込みが止まる -->
   <line x1="202" y1="124" x2="322" y2="124" stroke="#9CA3AF" stroke-width="2.5" stroke-dasharray="4 5" marker-end="url(#arrowGray)"/>
-  <text x="262" y="149" font-size="11.5" fill="#6B7280" text-anchor="middle" font-weight="bold">① 合図が止まる</text>
+  <text x="262" y="149" font-size="11.5" fill="#6B7280" text-anchor="middle" font-weight="bold">① 書き込みが止まる</text>
 
   <!-- メタデータDB -->
   <text x="395" y="44" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">メタデータDB</text>
@@ -50,7 +52,7 @@
   <line x1="20" y1="232" x2="780" y2="232" stroke="#E5E7EB" stroke-width="1.5"/>
 
   <text x="20" y="272" font-size="13" fill="#1F2937">Airflow上の状態</text>
-  <text x="20" y="328" font-size="13" fill="#1F2937">動作中の合図</text>
+  <text x="20" y="328" font-size="13" fill="#1F2937">現在時刻の書き込み</text>
   <text x="20" y="344" font-size="10.5" fill="#6B7280">（ハートビート）</text>
 
   <!-- 状態 -->
