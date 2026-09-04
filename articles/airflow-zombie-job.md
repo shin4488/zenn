@@ -17,7 +17,7 @@ Airflowを運用していると、Schedulerのログに `Detected zombie job` �
 Airflowでは、タスクを実行しているプロセスが、既定では5秒おきにメタデータDBの「最終更新時刻」を現在時刻に書き換えます。これが「まだ動いている」という合図で、心拍のように一定の間隔で打ち続けることから**ハートビート**と呼ばれています。この記事でも、以降はこの合図をハートビートと書きます。
 
 ![ワーカー・メタデータDB・Schedulerの関係](/images/airflow-zombie-job/fig1-heartbeat.png)
-*ワーカーは動作中の合図（ハートビート）をDBの最終更新時刻として書き込み、Schedulerはその時刻だけを見てタスクが動いているかを判断する*
+*① ワーカーは5秒おきに現在時刻をDBに書き込む。② その時刻がタスクの最終更新時刻として残る。③ Schedulerはワーカーを直接見ず、この時刻を読んで、最近更新されていれば動いていると判断する*
 
 Schedulerはワーカーを直接監視しているわけではなく、DBに残った最終更新時刻だけを見ています。定期的にDBを確認し、状態が `running` のタスクのうち、次のどちらかに当てはまるものをゾンビと判定します（公式ドキュメント: [Zombie/Undead Tasks](https://airflow.apache.org/docs/apache-airflow/2.10.5/core-concepts/tasks.html#zombie-undead-tasks)）。
 
@@ -71,7 +71,7 @@ gcloud logging buckets describe _Default \
 
 ### ログから対象を読み取る
 
-ログ本文の `msg` に、どのタスクがどのワーカーで動いていたかがそのまま書かれています。加工しなくても読めるので、Logs Explorerで開くか、上のコマンドの出力を見るだけで足ります。
+ログ本文の `msg` に、どのタスクがどのワーカーで動いていたかがそのまま書かれています。
 
 ```text
 Detected zombie job: {'full_filepath': '/home/airflow/gcs/dags/sample_dag.py', ..., 'msg': "{'DAG Id': 'sample_dag', 'Task Id': 'load', 'Run Id': 'scheduled__2026-08-01T00:00:00+00:00', 'Hostname': 'airflow-worker-xxxxx'}", ...} (See https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/tasks.html#zombie-undead-tasks)
@@ -116,10 +116,10 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 
 ### 1. 同じワーカーに集中していないか
 
-最初に、先ほど読み取った Hostname と時刻を見比べます。
+最初に、先ほど読み取ったログの時刻と Hostname を並べて見比べます。
 
 ![同じワーカーに集中している場合とばらばらの場合](/images/airflow-zombie-job/fig5-same-worker.png)
-*左:複数のDAGのタスクが同じワーカーで同時刻にゾンビになった。右:ワーカーも時刻もばらばら*
+*左:複数のDAGのゾンビが同じワーカー・同じ時間帯に集中している。右:ワーカーも時間帯もばらばら。並べ方が違うだけで、疑う対象が変わる*
 
 複数のDAGのタスクが同じワーカーでほぼ同時にゾンビになっていれば、個々のタスクではなく、そのワーカー自体の再起動やリソース不足を疑います。ワーカーも時刻もばらばらなら、タスク固有の問題か、DBやネットワークなど環境全体の問題に目を向けます。
 
