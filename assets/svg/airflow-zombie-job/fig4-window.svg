@@ -26,8 +26,8 @@
   <text x="20" y="279" font-size="9.5" fill="#6B7280">（更新・パッケージ追加）</text>
 
   <!-- ワーカーの再起動:検出直前に1回 -->
-  <polygon points="423,102 439,102 431,82" fill="#DC2626"/>
-  <text x="431" y="76" font-size="11" fill="#DC2626" text-anchor="middle" font-weight="bold">再起動</text>
+  <circle cx="431" cy="100" r="8" fill="#DC2626"/>
+  <text x="431" y="84" font-size="11" fill="#DC2626" text-anchor="middle" font-weight="bold">再起動</text>
 
   <!-- メモリ使用率:検出直前に上限へ近づく -->
   <line x1="130" y1="128" x2="660" y2="128" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4 4"/>
@@ -45,8 +45,8 @@
   </g>
 
   <!-- 環境の変更:時間帯の外に1回 -->
-  <polygon points="218,248 231,260 218,272 205,260" fill="#2563EB"/>
-  <text x="218" y="242" font-size="11" fill="#2563EB" text-anchor="middle" font-weight="bold">更新あり</text>
+  <circle cx="218" cy="265" r="8" fill="#2563EB"/>
+  <text x="218" y="249" font-size="11" fill="#2563EB" text-anchor="middle" font-weight="bold">更新あり</text>
 
   <!-- 検出時刻 -->
   <line x1="460" y1="46" x2="460" y2="296" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>

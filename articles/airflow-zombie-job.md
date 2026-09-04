@@ -163,6 +163,8 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
 | メモリ使用量 | `composer.googleapis.com/workload/memory/bytes_used` |
 | メモリ上限 | `composer.googleapis.com/workload/memory/quota` |
 | CPU使用時間 | `composer.googleapis.com/workload/cpu/usage_time` |
+| タスクごとのCPU使用率 | `composer.googleapis.com/workflow/task/cpu_usage` |
+| タスクごとのメモリ使用率 | `composer.googleapis.com/workflow/task/mem_usage` |
 | 同時実行数の上限 | Airflow設定の `[celery] worker_concurrency` |
 
 メモリは使用量そのものではなく、上限に対する割合で見ます。Metrics Explorerのクエリ言語に **PromQL** を選び、次のクエリを実行すると使用率（%）がそのまま表示されます。メトリクス名は[PromQLでの書き方](https://docs.cloud.google.com/monitoring/promql/promql-mapping)に従って、`.` と `/` を `_` に置き換えています。
@@ -232,11 +234,11 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
 
 | 観測結果 | 言えること | 言えないこと | 言えないことの調べ方 |
 |---|---|---|---|
-| `Detected zombie job` | ハートビートが途絶えた | 途絶えた理由 | 「原因を切り分ける」の手順1〜6を順に確認する |
-| 検出直前のワーカー再起動 | プロセスが失われた直接の要因 | 再起動の理由 | 手順2のワーカーログ（`Negsignal.SIGKILL`、`Received SIGTERM`）と手順3のメモリ使用率を同じ時間帯で見る。環境更新による入れ替わりは手順5の監査ログで確認する |
-| 高いメモリ使用率 | メモリ不足の可能性 | `Negsignal.SIGKILL` などの記録がない状態での強制終了の断定 | 手順2のワーカーログで `Negsignal.SIGKILL` を探す。Podの退避回数も合わせて見る |
-| 複数DAGが同じワーカーで同時に検出 | ワーカー共通の問題の疑い | どのタスクが負荷をかけたか | タスクごとのCPU・メモリ使用率のメトリクス `composer.googleapis.com/workflow/task/cpu_usage` と `composer.googleapis.com/workflow/task/mem_usage` で、同じ時間帯に動いていたタスクを比べる |
-| エラーログがない | 該当するログを確認できなかった | エラーが起きなかったこと | 調査期間がログの保持期間内かを確認する（「Schedulerログを検索する」の節）。Podが退避されるとログが出力されないまま失われることがあるため、手順2の退避回数も見る |
+| `Detected zombie job` | ハートビートが途絶えた | 途絶えた理由 | [原因を切り分ける](#原因を切り分ける)の手順1〜6を順に確認する |
+| 検出直前のワーカー再起動 | プロセスが失われた直接の要因 | 再起動の理由 | [手順2](#2.-ワーカーの再起動・退避)のワーカーログと[手順3](#3.-ワーカーのメモリ・cpu)のメモリ使用率を同じ時間帯で見る。環境更新による入れ替わりは[手順5](#5.-環境の変更・メンテナンス)の監査ログで確認する |
+| 高いメモリ使用率 | メモリ不足の可能性 | `Negsignal.SIGKILL` などの記録がない状態での強制終了の断定 | [手順2](#2.-ワーカーの再起動・退避)のワーカーログで `Negsignal.SIGKILL` を探す。Podの退避回数も合わせて見る |
+| 複数DAGが同じワーカーで同時に検出 | ワーカー共通の問題の疑い | どのタスクが負荷をかけたか | [手順3](#3.-ワーカーのメモリ・cpu)のタスクごとのCPU・メモリ使用率で、同じ時間帯に動いていたタスクを比べる |
+| エラーログがない | 該当するログを確認できなかった | エラーが起きなかったこと | 調査期間がログの保持期間内かを確認する（[Schedulerログを検索する](#schedulerログを検索する)）。Podが退避されるとログが出力されないまま失われることがあるため、[手順2](#2.-ワーカーの再起動・退避)の退避回数も見る |
 
 ## Airflow 3 での変更点
 
