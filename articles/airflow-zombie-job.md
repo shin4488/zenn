@@ -1,5 +1,5 @@
 ---
-title: "Airflowのゾンビタスクはなぜ起きるのか - ハートビートの仕組みから原因の切り分けまで"
+title: "Airflowのゾンビタスクの原因調査と対処 - ハートビートの仕組みから切り分けの手順まで"
 emoji: "👻"
 type: "tech"
 topics: ["airflow", "cloudcomposer", "googlecloud", "障害調査"]
@@ -8,7 +8,7 @@ published: false
 
 Airflowを運用していると、Schedulerのログに `Detected zombie job` と記録され、動いていたはずのタスクがゾンビタスクとして失敗することがあります。このログは「Airflowがタスクの動作を確認できなくなった」という結果を伝えるだけで、原因までは書かれていません。原因は、ワーカーのメトリクスやほかのログと突き合わせて絞り込む必要があります。
 
-この記事では、ゾンビタスクが検出される仕組みを説明したあと、発生の確認と原因の切り分けの手順をまとめます。コマンド例はGoogle CloudのマネージドAirflow向けですが、考え方は自前のAirflowでも同じです。対象はAirflow 2系で、Airflow 3での変更点は最後にまとめます。
+この記事では、ゾンビタスクが検出される仕組みを説明したあと、発生の確認、原因の切り分け、対処の手順をまとめます。コマンド例はGoogle CloudのマネージドAirflow向けですが、考え方は自前のAirflowでも同じです。対象はAirflow 2系で、Airflow 3での変更点は最後にまとめます。
 
 ## ゾンビタスクが検出される仕組み
 
@@ -109,7 +109,7 @@ gcloud logging buckets describe _Default \
 
 Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/monitor-key-metrics)では、最も多い原因はワーカーのCPU・メモリ不足とされています。そのため、次の手順もワーカーから見ていきます。
 
-## 原因を切り分ける
+## 原因を切り分けて対処する
 
 原因候補が複数あるので、検出時刻の前後10〜15分に絞って、ワーカー → メタデータDB → 環境の変更 → 通信の順に確認します。
 
@@ -145,15 +145,16 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 
 ### 2. ワーカーの再起動・退避
 
-| 確認対象 | メトリクス・ログ |
-|---|---|
-| ワーカーごとの再起動回数 | `composer.googleapis.com/workload/restart_count` |
-| 環境全体のワーカーPod退避回数 | `composer.googleapis.com/environment/worker/pod_eviction_count` |
-| 強制終了・停止の記録 | ワーカーログの `Negsignal.SIGKILL`、`Received SIGTERM` |
+| 確認対象 | 見る場所 | メトリクス・ログ |
+|---|---|---|
+| ワーカーごとの再起動回数 | Metrics Explorer | `composer.googleapis.com/workload/restart_count` |
+| 環境全体のワーカーPod退避回数 | Metrics Explorer | `composer.googleapis.com/environment/worker/pod_eviction_count` |
+| ワーカーごとのストレージ使用量・上限 | Metrics Explorer | `composer.googleapis.com/workload/disk/bytes_used`、`composer.googleapis.com/workload/disk/quota` |
+| 強制終了・停止の記録 | ワーカーログ（下のコマンド） | `Negsignal.SIGKILL`、`Received SIGTERM` |
 
-再起動回数はワーカーごとに分かるので、ゾンビログの Hostname にあたるワーカーを `workload_name` で指定します。退避回数は環境全体の値で、どのワーカーが退避されたかは分からないため、退避があった時刻のワーカーログと照合します。
+メトリクスは、`Detected zombie job` のログの Hostname にあたるワーカーを `workload_name` で指定して見ます。退避回数だけは環境全体の値なので、退避があった時刻をワーカーログと照合してワーカーを特定します。そのワーカーのストレージ使用量が上限近くなら、退避の原因はストレージ不足と考えられます。
 
-ワーカーログは次のコマンドで検索します。手順6で使う `Heartbeat time limit exceeded` も一緒に探しています。`Negsignal.SIGKILL` と `Received SIGTERM` の意味は、Google Cloudの[トラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#sigterm)に説明があります。出力に `labels` を含めているので、どのDAG・タスクのログかをゾンビログの DAG Id・Task Id と突き合わせられます。
+ワーカーログは次のコマンドで検索します（`Negsignal.SIGKILL` と `Received SIGTERM` の意味は[公式のトラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#sigterm)を参照）。手順6で使う `Heartbeat time limit exceeded` も一緒に探します。出力の `labels` で、どのDAG・タスクのログかが分かります。
 
 ```shell
 gcloud logging read 'resource.type="cloud_composer_environment"
@@ -172,16 +173,23 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
 
 検出の直前に同じワーカーの再起動や退避があれば、その再起動・退避でタスクのプロセスが失われたと判断できます。再起動の理由は回数からは分からないので、次のメモリ・CPUで確かめます。
 
+状況に応じた対処です（各手順の対処は[公式のトラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#zombie-tasks)に基づいています）。
+
+| 状況 | 対処 |
+|---|---|
+| ストレージ不足で退避されていた（退避の時刻に、そのワーカーのストレージ使用量が上限近い） | 一時ファイルを早めに消す。<br>大きなファイルをワーカーに置かない。<br>ワーカーのストレージを増やす |
+| 再起動・退避していたが、ストレージには余裕があった | 理由は回数からは分からない。<br>メモリ不足なら[手順3](#3.-ワーカーのメモリ・cpu)、環境更新・メンテナンスなら[手順5](#5.-環境の変更・メンテナンス)で確かめて対処する |
+
 ### 3. ワーカーのメモリ・CPU
 
-| 対象 | 確認対象 | メトリクス・設定 |
-|---|---|---|
-| ワーカー全体 | メモリ使用量 | `composer.googleapis.com/workload/memory/bytes_used` |
-| ワーカー全体 | メモリ上限 | `composer.googleapis.com/workload/memory/quota` |
-| ワーカー全体 | CPU使用時間 | `composer.googleapis.com/workload/cpu/usage_time` |
-| タスクごと | CPU使用率 | `composer.googleapis.com/workflow/task/cpu_usage` |
-| タスクごと | メモリ使用率 | `composer.googleapis.com/workflow/task/mem_usage` |
-| 設定 | 同時実行数の上限 | Airflow設定の `[celery] worker_concurrency` |
+| 対象 | 確認対象 | 見る場所 | メトリクス・設定 |
+|---|---|---|---|
+| ワーカー全体 | メモリ使用量 | Metrics Explorer | `composer.googleapis.com/workload/memory/bytes_used` |
+| ワーカー全体 | メモリ上限 | Metrics Explorer | `composer.googleapis.com/workload/memory/quota` |
+| ワーカー全体 | CPU使用時間 | Metrics Explorer | `composer.googleapis.com/workload/cpu/usage_time` |
+| タスクごと | CPU使用率 | Metrics Explorer | `composer.googleapis.com/workflow/task/cpu_usage` |
+| タスクごと | メモリ使用率 | Metrics Explorer | `composer.googleapis.com/workflow/task/mem_usage` |
+| 設定 | 1台のワーカーが同時に実行するタスク数の上限 | Airflow画面の Admin → Configurations | `[celery] worker_concurrency` |
 
 ワーカー全体のメモリは、使用量そのものではなく上限に対する割合で見ます。上の2つのメトリクスから割合を出すには、Metrics Explorerのクエリ言語に **PromQL** を選び、次のクエリを実行します（参考: [PromQLでの書き方](https://docs.cloud.google.com/monitoring/promql/promql-mapping)）。使用率（%）がそのまま表示されます。
 
@@ -210,13 +218,20 @@ composer_googleapis_com:workload_memory_quota{
 
 タスクごとのCPU・メモリ使用率は最初から割合（%）なので、そのまま見られます。同じ時間帯に動いていたタスクのうち、どれが多く使っていたかを比べるのに使います。
 
-同時実行数の上限 `worker_concurrency` は「同時に走らせてよい数」であって、「安定して処理できる数」ではありません。同じ時間帯に動いていたタスク数と、1タスクあたりの負荷を合わせて見ます。
+状況に応じた対処です。
+
+| 状況 | 対処 |
+|---|---|
+| ワーカー全体のメモリ・CPUが上限近く（80%超）まで使われていた | ワーカーのメモリ・CPUを増やす。<br>同時に実行するタスク数の上限 `worker_concurrency` を下げる※ |
+| 特定のタスクだけ使用量が大きい | タスクの処理を見直して使用量を減らす。<br>KubernetesPodOperator でワーカーの外の専用Podで実行する（CPU・メモリを個別に指定できる） |
+
+※ `worker_concurrency` は、1台のワーカーが同時に実行するタスク数の上限です。設定で決めた上限にすぎず、その数のタスクを同時に動かしてもワーカーのメモリ・CPUが足りるとは限りません。下げると同時に動くタスクが減り、ワーカー全体の使用量のピークが下がります。値は、同じ時間帯にそのワーカーで動いていたタスク数と、1タスクあたりの使用量から決めます。
 
 ### 4. メタデータDB
 
 ワーカー側に異常が見つからなければ、ハートビートの書き込み先であるDBを疑います。
 
-| 確認対象 | メトリクス |
+| 確認対象 | メトリクス（Metrics Explorerで見る） |
 |---|---|
 | 正常性 | `composer.googleapis.com/environment/database_health` |
 | CPU使用率 | `composer.googleapis.com/environment/database/cpu/utilization` |
@@ -224,15 +239,22 @@ composer_googleapis_com:workload_memory_quota{
 
 `database_health` は、監視用のPodが1分ごとにDBへ接続できたかを表す値なので、正常でも短い遅延や一部の接続失敗までは否定できません。CPU・メモリ使用率と接続エラーも合わせて見て、どれにも異常がなければDBが原因である可能性は下がります。
 
+状況に応じた対処です。
+
+| 状況 | 対処 |
+|---|---|
+| DBのCPU・メモリが高い | 環境のサイズを上げる（DBの性能も上がる）。<br>Schedulerの台数やDAG解析の頻度を下げる |
+| DAGのコードがDBに負荷をかけている | トップレベルのコード（DAGファイルの解析のたびに実行される部分）で `Variables.get` や XCom を多用しない（Jinjaテンプレートで参照する）。<br>`CloudLoggingHandler` を使わない |
+
 ### 5. 環境の変更・メンテナンス
 
 環境の更新やパッケージのインストール中はワーカーが入れ替わります。実行中のタスクが猶予時間内に終わらないと中断され、ゾンビとして検出されます。ワーカーが入れ替わる操作は、バージョン更新、PyPIパッケージの変更、Airflow構成のオーバーライドや環境変数の変更、ワーカーのCPU・メモリ・ストレージの変更などです（[公式ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/update-environments#updates-restart)）。
 
-| 確認対象 | メトリクス・ログ |
-|---|---|
-| 環境の更新・パッケージの変更 | 監査ログ |
-| メンテナンスの実施 | `composer.googleapis.com/environment/maintenance_operation` |
-| 自動スケールによるワーカー数の増減 | `composer.googleapis.com/environment/num_celery_workers` |
+| 確認対象 | 見る場所 | メトリクス・ログ |
+|---|---|---|
+| 環境の更新・パッケージの変更 | 監査ログ（下のコマンド） | `cloudaudit.googleapis.com/activity` |
+| メンテナンスの実施 | Metrics Explorer | `composer.googleapis.com/environment/maintenance_operation` |
+| 自動スケールによるワーカー数の増減 | Metrics Explorer | `composer.googleapis.com/environment/num_celery_workers` |
 
 監査ログは次のコマンドで検索します。`log_id` の引数はURLエンコードせずに書きます（エンコードすると一致しなくなることが[クエリ言語の仕様](https://docs.cloud.google.com/logging/docs/view/logging-query-language#log_id)に書かれています）。
 
@@ -248,23 +270,36 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
   --format='value(timestamp,protoPayload.methodName)'
 ```
 
+状況に応じた対処です。
+
+| 状況 | 対処 |
+|---|---|
+| 環境更新中にワーカーが入れ替わった | 重要なタスクが動いていない時間帯に更新する。<br>タスクに再試行（`retries`）を設定する |
+| メンテナンス中だった | メンテナンスウィンドウを設定して、重要なタスクの時間帯と重ならないようにする |
+
 ### 6. 通信エラーと設定値
 
 ワーカーがDBに書き込めない状態が判定までの時間を超えると、ワーカー側のログにも `Heartbeat time limit exceeded` が残ります。手順2の検索でこれが見つかっていれば、ワーカーとDBの間の通信か、DB側の応答の遅れを疑います。DBが正常なら、ネットワークの接続エラーやタイムアウトを同じ時間帯のログから探します。
 
-一時的な遅れが原因で、待てば回復していたと判断できる場合は、`scheduler_zombie_task_threshold` を伸ばす方法もあります。ただし伸ばした分だけ、本当に止まったタスクの検出も遅れます。
+状況に応じた対処です。
 
-## 事実と推測を分ける
+| 状況 | 対処 |
+|---|---|
+| 一時的な遅れで、待てば回復していた | `scheduler_zombie_task_threshold` を伸ばす。<br>ただし伸ばした分だけ、本当に止まったタスクの検出も遅れる |
+| DBへの接続が不安定 | [手順4](#4.-メタデータdb)の対処。<br>タスクに再試行（`retries`）を設定する |
 
-観測できた情報から言えることと言えないことを分けて記録します。言えないことは、右端の列の方法で確かめてから結論にします。ここを混同すると、再発防止策を誤ります。
+## 原因と対処のまとめ
 
-| 観測結果 | 言えること | 言えないこと | 言えないことの調べ方 |
+ゾンビタスクが発生する原因ごとの確かめ方と対処です。エラーログがないことは、エラーが起きなかった根拠にはなりません。調査期間がログの保持期間内か（[発生を確認する](#発生を確認する)）と、Podの退避でログが失われていないか（[手順2](#2.-ワーカーの再起動・退避)の退避回数）も確かめます。環境更新、メンテナンス、一時的な接続障害のように時間がたてば解消する原因なら、タスクに再試行（`retries`）を設定しておくと、ゾンビタスクが自動で再実行されます。
+
+| 経路 | 原因 | 確かめ方 | 対処 |
 |---|---|---|---|
-| `Detected zombie job` | ハートビートが途絶えた | 途絶えた理由 | [原因を切り分ける](#原因を切り分ける)の手順1〜6を順に確認する |
-| 検出直前のワーカー再起動 | プロセスが失われた直接の要因 | 再起動の理由 | [手順2](#2.-ワーカーの再起動・退避)のワーカーログと[手順3](#3.-ワーカーのメモリ・cpu)のメモリ使用率を同じ時間帯で見る。環境更新による入れ替わりは[手順5](#5.-環境の変更・メンテナンス)の監査ログで確認する |
-| 高いメモリ使用率 | メモリ不足の可能性 | メモリ不足でプロセスが強制終了されたこと | [手順2](#2.-ワーカーの再起動・退避)のワーカーログで `Negsignal.SIGKILL` を探す。Podの退避回数も合わせて見る |
-| 複数DAGが同じワーカーで同時に検出 | そのワーカーに共通する問題の疑い | ワーカーに何が起きたか（再起動か、メモリ・CPU不足か）。どのタスクが原因か | [手順2](#2.-ワーカーの再起動・退避)で再起動・退避を確認し、[手順3](#3.-ワーカーのメモリ・cpu)でワーカー全体とタスクごとのメモリ・CPU使用率を見る |
-| エラーログがない | 該当するログを確認できなかった | エラーが起きなかったこと | 調査期間がログの保持期間内かを確認する（[発生を確認する](#発生を確認する)）。Podが退避されるとログが出力されないまま失われることがあるため、[手順2](#2.-ワーカーの再起動・退避)の退避回数も見る |
+| プロセスが止まる | ワーカーのメモリ不足（使用率が高く、同じ時間帯に再起動や `Negsignal.SIGKILL` がある） | [手順2](#2.-ワーカーの再起動・退避)のワーカーログと[手順3](#3.-ワーカーのメモリ・cpu)の使用率 | ワーカーのメモリを増やす。<br>同時に実行するタスク数の上限 `worker_concurrency` を下げる。<br>特定のタスクだけ大きければ、そのタスクの処理を見直すか、KubernetesPodOperator でワーカーの外の専用Podで実行する（CPU・メモリを個別に指定できる） |
+| プロセスが止まる | ストレージ不足による退避 | [手順2](#2.-ワーカーの再起動・退避)の退避の時刻と、そのワーカーのストレージ使用量 | 一時ファイルを減らす。<br>ワーカーのストレージを増やす |
+| プロセスが止まる | 環境更新・メンテナンスによる入れ替わり（検出の直前にあった） | [手順5](#5.-環境の変更・メンテナンス)の監査ログとメンテナンスのメトリクス | 更新の時間帯をずらす。<br>メンテナンスウィンドウを設定する |
+| DBに書き込めない | ワーカーの高負荷（CPU・メモリが上限近いが、再起動や `Negsignal.SIGKILL` はない） | [手順3](#3.-ワーカーのメモリ・cpu)の使用率とタスクごとの使用率 | ワーカーのCPU・メモリを増やす。<br>`worker_concurrency` を下げる。<br>特定のタスクだけ大きければ、そのタスクの処理を見直すか、KubernetesPodOperator でワーカーの外の専用Podで実行する（CPU・メモリを個別に指定できる） |
+| DBに書き込めない | メタデータDBの高負荷・接続エラー（検出時刻にCPU・メモリが高い、または接続エラーがある） | [手順4](#4.-メタデータdb)のメトリクスと接続エラー | 環境のサイズを上げる。<br>DAGのコードを見直す（トップレベルでの `Variables.get` や XCom の多用をやめる） |
+| DBに書き込めない | 一時的な遅れ（ワーカーにもDBにも異常がない） | [手順6](#6.-通信エラーと設定値)の `Heartbeat time limit exceeded` と、[手順3](#3.-ワーカーのメモリ・cpu)・[手順4](#4.-メタデータdb)の結果 | `scheduler_zombie_task_threshold` を伸ばす |
 
 ## Airflow 3 での変更点
 
