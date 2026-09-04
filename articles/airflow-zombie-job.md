@@ -111,8 +111,10 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 
 原因候補が複数あるので、検出時刻の前後10〜15分に絞って、ワーカー → メタデータDB → 環境の変更 → 通信の順に確認します。
 
-![検出時刻を軸に各情報を重ねて見る](/images/airflow-zombie-job/fig4-window.png)
-*検出時刻の前後10〜15分に、ワーカーの再起動・メモリ使用率・DBの正常性・環境の変更を同じ時間軸で重ねる。この例では再起動とメモリの上昇が検出直前にあり、DBは正常、環境の変更は時間帯の外なので、ワーカー側を疑う*
+下の図は、この切り分けを1件のゾンビタスクに当てはめた例です。以降の手順で集める情報を、ゾンビ検出の時刻を軸に同じ時間軸へ並べると、どの出来事が検出と重なっているかが見えてきます。
+
+![切り分けの例](/images/airflow-zombie-job/fig4-window.png)
+*切り分けの例。ワーカーの再起動とメモリの上昇が検出直前に重なり、DBは正常、環境の変更は時間帯の外にある。この場合はワーカー側を疑う。各行の情報の集め方は手順2〜5で説明する*
 
 以降のコマンドの `YOUR_PROJECT_ID`、`YOUR_COMPOSER_ENVIRONMENT`、`YOUR_WORKER_NAME` は調査対象に置き換えてください。メトリクスはすべてMetrics Explorer（`https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR_PROJECT_ID`）で表示できます。
 
