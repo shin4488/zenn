@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="840" viewBox="0 0 800 420" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="800" height="420" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowO" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#EA580C"/>
+    </marker>
+    <marker id="arrowB" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 列見出し ===== -->
+  <g font-size="13" fill="#6B7280" font-weight="bold" text-anchor="middle">
+    <text x="215" y="30">ワーカー</text>
+    <text x="325" y="22" font-size="11.5">現在時刻の書き込み</text>
+    <text x="325" y="38" font-size="11" font-weight="normal">(ハートビート)</text>
+    <text x="428" y="30">メタデータDB</text>
+    <text x="670" y="30">Schedulerの判定</text>
+  </g>
+
+  <!-- 行の区切り -->
+  <line x1="20" y1="170" x2="780" y2="170" stroke="#E5E7EB" stroke-width="1.5"/>
+  <line x1="20" y1="290" x2="780" y2="290" stroke="#E5E7EB" stroke-width="1.5"/>
+
+  <!-- ===================== 行1:正常 (cy=110) ===================== -->
+  <text x="20" y="115" font-size="13" fill="#1F2937" font-weight="bold">正常</text>
+  <rect x="145" y="75" width="140" height="70" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+  <rect x="170" y="92" width="90" height="36" rx="7" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+  <text x="215" y="115" font-size="13" fill="#EA580C" text-anchor="middle">タスク</text>
+  <circle cx="250" cy="100" r="3.5" fill="#16A34A"/>
+  <!-- 合図が届く -->
+  <line x1="290" y1="110" x2="360" y2="110" stroke="#EA580C" stroke-width="2.5" marker-end="url(#arrowO)"/>
+  <polyline points="294,94 302,94 306,82 312,106 316,94 328,94 332,82 338,106 342,94 356,94" fill="none" stroke="#EA580C" stroke-width="2" stroke-linejoin="round"/>
+  <!-- DB -->
+  <path d="M365 80 v56 a50 12 0 0 0 100 0 v-56" fill="#EFF6FF" stroke="#334155" stroke-width="2"/>
+  <ellipse cx="415" cy="80" rx="50" ry="12" fill="#DBEAFE" stroke="#334155" stroke-width="2"/>
+  <rect x="373" y="98" width="84" height="30" rx="5" fill="#ffffff" stroke="#16A34A" stroke-width="1.5"/>
+  <text x="415" y="118" font-size="11.5" fill="#16A34A" text-anchor="middle" font-weight="bold">更新される</text>
+  <!-- 確認 → 判定 -->
+  <line x1="470" y1="110" x2="560" y2="110" stroke="#2563EB" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrowB)"/>
+  <circle cx="505" cy="110" r="11" fill="#ffffff" stroke="#2563EB" stroke-width="2.5"/>
+  <line x1="513" y1="118" x2="522" y2="127" stroke="#2563EB" stroke-width="3.5" stroke-linecap="round"/>
+  <rect x="565" y="88" width="210" height="44" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+  <text x="655" y="116" font-size="15" fill="#15803D" text-anchor="middle" font-weight="bold">正常</text>
+  <polyline points="700,110 708,118 722,100" fill="none" stroke="#16A34A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- ===================== 行2:プロセスが止まる (cy=230) ===================== -->
+  <text x="20" y="235" font-size="13" fill="#1F2937" font-weight="bold">プロセスが止まる</text>
+  <rect x="145" y="195" width="140" height="70" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+  <rect x="170" y="212" width="90" height="36" rx="7" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="205" y1="220" x2="225" y2="240" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="225" y1="220" x2="205" y2="240" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- 合図が送られない -->
+  <line x1="290" y1="230" x2="360" y2="230" stroke="#D1D5DB" stroke-width="2.5" stroke-dasharray="3 5"/>
+  <text x="325" y="254" font-size="11" fill="#9CA3AF" text-anchor="middle">書き込みなし</text>
+  <!-- DB -->
+  <path d="M365 200 v56 a50 12 0 0 0 100 0 v-56" fill="#EFF6FF" stroke="#334155" stroke-width="2"/>
+  <ellipse cx="415" cy="200" rx="50" ry="12" fill="#DBEAFE" stroke="#334155" stroke-width="2"/>
+  <rect x="373" y="218" width="84" height="30" rx="5" fill="#ffffff" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="415" y="238" font-size="11.5" fill="#DC2626" text-anchor="middle" font-weight="bold">更新されない</text>
+  <!-- 確認 → 判定 -->
+  <line x1="470" y1="230" x2="560" y2="230" stroke="#2563EB" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrowB)"/>
+  <circle cx="505" cy="230" r="11" fill="#ffffff" stroke="#2563EB" stroke-width="2.5"/>
+  <line x1="513" y1="238" x2="522" y2="247" stroke="#2563EB" stroke-width="3.5" stroke-linecap="round"/>
+  <rect x="565" y="208" width="210" height="44" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text x="650" y="236" font-size="15" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
+  <text x="732" y="238" font-size="22" text-anchor="middle">👻</text>
+
+  <!-- ===================== 行3:合図が届かない (cy=350) ===================== -->
+  <text x="20" y="355" font-size="13" fill="#1F2937" font-weight="bold">DBに書き込めない</text>
+  <rect x="145" y="315" width="140" height="70" rx="10" fill="#F8FAFC" stroke="#334155" stroke-width="2"/>
+  <rect x="170" y="332" width="90" height="36" rx="7" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+  <text x="215" y="355" font-size="13" fill="#EA580C" text-anchor="middle">タスク</text>
+  <circle cx="250" cy="340" r="3.5" fill="#16A34A"/>
+  <!-- 合図は送るが途中で止まる -->
+  <line x1="290" y1="350" x2="360" y2="350" stroke="#EA580C" stroke-width="2.5" marker-end="url(#arrowO)"/>
+  <polyline points="294,334 302,334 306,322 312,346 316,334 328,334 332,322 338,346 342,334 356,334" fill="none" stroke="#EA580C" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="347" cy="350" r="10" fill="#ffffff" stroke="#DC2626" stroke-width="2.5"/>
+  <line x1="340" y1="343" x2="354" y2="357" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="325" y="374" font-size="11" fill="#DC2626" text-anchor="middle">書き込めない</text>
+  <!-- DB -->
+  <path d="M365 320 v56 a50 12 0 0 0 100 0 v-56" fill="#EFF6FF" stroke="#334155" stroke-width="2"/>
+  <ellipse cx="415" cy="320" rx="50" ry="12" fill="#DBEAFE" stroke="#334155" stroke-width="2"/>
+  <rect x="373" y="338" width="84" height="30" rx="5" fill="#ffffff" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="415" y="358" font-size="11.5" fill="#DC2626" text-anchor="middle" font-weight="bold">更新されない</text>
+  <!-- 確認 → 判定 -->
+  <line x1="470" y1="350" x2="560" y2="350" stroke="#2563EB" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrowB)"/>
+  <circle cx="505" cy="350" r="11" fill="#ffffff" stroke="#2563EB" stroke-width="2.5"/>
+  <line x1="513" y1="358" x2="522" y2="367" stroke="#2563EB" stroke-width="3.5" stroke-linecap="round"/>
+  <rect x="565" y="328" width="210" height="44" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text x="650" y="356" font-size="15" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
+  <text x="732" y="358" font-size="22" text-anchor="middle">👻</text>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 800 300" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="800" height="300" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowO" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#EA580C"/>
+    </marker>
+    <marker id="arrowB" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <!-- Schedulerはワーカーを直接は見ない -->
+  <path d="M 755 108 C 755 20, 45 20, 45 108" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="6 5"/>
+  <circle cx="400" cy="42" r="12" fill="#ffffff" stroke="#9CA3AF" stroke-width="2"/>
+  <line x1="394" y1="36" x2="406" y2="48" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="406" y1="36" x2="394" y2="48" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="400" y="72" font-size="12" fill="#6B7280" text-anchor="middle">直接は見ない</text>
+
+  <!-- ===== ワーカー ===== -->
+  <text x="115" y="98" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">ワーカー</text>
+  <rect x="30" y="108" width="170" height="140" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <rect x="55" y="150" width="120" height="56" rx="8" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+  <text x="115" y="184" font-size="14" fill="#EA580C" text-anchor="middle">タスク</text>
+  <circle cx="162" cy="162" r="4" fill="#16A34A"/>
+
+  <!-- ① 現在時刻を書き込む -->
+  <line x1="202" y1="178" x2="322" y2="178" stroke="#EA580C" stroke-width="2.5" marker-end="url(#arrowO)"/>
+  <rect x="233" y="138" width="60" height="26" rx="4" fill="#ffffff" stroke="#EA580C" stroke-width="1.5"/>
+  <text x="263" y="156" font-size="12" fill="#EA580C" text-anchor="middle" font-weight="bold">10:00:10</text>
+  <text x="262" y="203" font-size="11.5" fill="#EA580C" text-anchor="middle" font-weight="bold">① 現在時刻を書き込む</text>
+  <text x="262" y="219" font-size="11" fill="#EA580C" text-anchor="middle">（5秒おき）</text>
+
+  <!-- ===== メタデータDB ===== -->
+  <text x="395" y="98" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">メタデータDB</text>
+  <path d="M325 118 v114 a70 14 0 0 0 140 0 v-114" fill="#EFF6FF" stroke="#334155" stroke-width="2.5"/>
+  <ellipse cx="395" cy="118" rx="70" ry="14" fill="#DBEAFE" stroke="#334155" stroke-width="2.5"/>
+  <rect x="340" y="150" width="110" height="54" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="395" y="170" font-size="10.5" fill="#6B7280" text-anchor="middle">タスクの最終更新時刻</text>
+  <text x="395" y="193" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">10:00:10</text>
+  <text x="395" y="268" font-size="11.5" fill="#334155" text-anchor="middle" font-weight="bold">② 最終更新時刻として残る</text>
+
+  <!-- ③ Schedulerが時刻を読む -->
+  <line x1="558" y1="178" x2="476" y2="178" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#arrowB)"/>
+  <text x="516" y="203" font-size="11.5" fill="#2563EB" text-anchor="middle" font-weight="bold">③ 時刻を読む</text>
+
+  <!-- ===== Scheduler ===== -->
+  <text x="665" y="98" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">Scheduler</text>
+  <rect x="560" y="108" width="210" height="140" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <text x="665" y="146" font-size="13" fill="#1F2937" text-anchor="middle">今は 10:00:12</text>
+  <text x="665" y="170" font-size="13" fill="#1F2937" text-anchor="middle">最終更新から 2秒</text>
+  <rect x="590" y="188" width="150" height="36" rx="8" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+  <text x="655" y="212" font-size="13" fill="#15803D" text-anchor="middle" font-weight="bold">動いている</text>
+  <polyline points="712,206 718,212 730,198" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

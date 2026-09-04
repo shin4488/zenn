@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="840" viewBox="0 0 800 420" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="800" height="420" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowGray" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9CA3AF"/>
+    </marker>
+    <marker id="arrowB" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <!-- ===================== 上段:ゾンビと判定されるときの各要素 ===================== -->
+  <!-- ワーカー -->
+  <text x="115" y="44" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">ワーカー</text>
+  <rect x="30" y="54" width="170" height="140" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <rect x="55" y="96" width="120" height="56" rx="8" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="115" y="130" font-size="14" fill="#9CA3AF" text-anchor="middle">タスク</text>
+  <circle cx="162" cy="108" r="4" fill="#9CA3AF"/>
+  <text x="115" y="178" font-size="10.5" fill="#6B7280" text-anchor="middle">動いているか分からない</text>
+
+  <!-- ① 書き込みが止まる -->
+  <line x1="202" y1="124" x2="322" y2="124" stroke="#9CA3AF" stroke-width="2.5" stroke-dasharray="4 5" marker-end="url(#arrowGray)"/>
+  <text x="262" y="149" font-size="11.5" fill="#6B7280" text-anchor="middle" font-weight="bold">① 書き込みが止まる</text>
+
+  <!-- メタデータDB -->
+  <text x="395" y="44" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">メタデータDB</text>
+  <path d="M325 64 v114 a70 14 0 0 0 140 0 v-114" fill="#EFF6FF" stroke="#334155" stroke-width="2.5"/>
+  <ellipse cx="395" cy="64" rx="70" ry="14" fill="#DBEAFE" stroke="#334155" stroke-width="2.5"/>
+  <rect x="335" y="92" width="120" height="72" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="348" y="112" font-size="10.5" fill="#6B7280">状態</text>
+  <text x="442" y="112" font-size="12" fill="#15803D" text-anchor="end" font-weight="bold">running</text>
+  <line x1="343" y1="121" x2="447" y2="121" stroke="#E5E7EB" stroke-width="1.5"/>
+  <text x="395" y="139" font-size="10.5" fill="#6B7280" text-anchor="middle">最終更新時刻</text>
+  <text x="395" y="157" font-size="15" fill="#DC2626" text-anchor="middle" font-weight="bold">10:00:10</text>
+  <text x="395" y="214" font-size="11.5" fill="#334155" text-anchor="middle" font-weight="bold">② 更新されない</text>
+
+  <!-- ③ 時刻を読む -->
+  <line x1="558" y1="124" x2="476" y2="124" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#arrowB)"/>
+  <text x="516" y="149" font-size="11.5" fill="#2563EB" text-anchor="middle" font-weight="bold">③ 時刻を読む</text>
+
+  <!-- Scheduler -->
+  <text x="665" y="44" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">Scheduler</text>
+  <rect x="560" y="54" width="210" height="140" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
+  <text x="665" y="86" font-size="13" fill="#1F2937" text-anchor="middle">今は 10:05:12</text>
+  <text x="665" y="108" font-size="12" fill="#DC2626" text-anchor="middle" font-weight="bold">最終更新から 302秒 ＞ 300秒</text>
+  <rect x="590" y="120" width="150" height="38" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text x="652" y="145" font-size="13" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
+  <text x="722" y="147" font-size="18" text-anchor="middle">👻</text>
+  <text x="665" y="180" font-size="11.5" fill="#DC2626" text-anchor="middle" font-weight="bold">→ 状態を failed に変更</text>
+
+  <!-- ===================== 下段:同じことを時間の流れで見る ===================== -->
+  <line x1="20" y1="232" x2="780" y2="232" stroke="#E5E7EB" stroke-width="1.5"/>
+
+  <text x="20" y="272" font-size="13" fill="#1F2937">Airflow上の状態</text>
+  <text x="20" y="328" font-size="13" fill="#1F2937">現在時刻の書き込み</text>
+  <text x="20" y="344" font-size="10.5" fill="#6B7280">（ハートビート）</text>
+
+  <!-- 状態 -->
+  <rect x="150" y="254" width="500" height="28" rx="6" fill="#22C55E" fill-opacity="0.18" stroke="#16A34A" stroke-width="2"/>
+  <text x="400" y="273" font-size="13" fill="#15803D" text-anchor="middle" font-weight="bold">running</text>
+  <rect x="652" y="254" width="88" height="28" rx="6" fill="#EF4444" fill-opacity="0.14" stroke="#DC2626" stroke-width="2"/>
+  <text x="696" y="273" font-size="13" fill="#DC2626" text-anchor="middle" font-weight="bold">failed</text>
+
+  <!-- 合図の時間軸 -->
+  <line x1="150" y1="330" x2="748" y2="330" stroke="#9CA3AF" stroke-width="2" marker-end="url(#arrowGray)"/>
+  <g fill="none" stroke="#EA580C" stroke-width="2" stroke-linejoin="round">
+    <polyline points="157,330 161,330 164,316 168,342 171,330 173,330"/>
+    <polyline points="181,330 185,330 188,316 192,342 195,330 197,330"/>
+    <polyline points="205,330 209,330 212,316 216,342 219,330 221,330"/>
+    <polyline points="229,330 233,330 236,316 240,342 243,330 245,330"/>
+    <polyline points="253,330 257,330 260,316 264,342 267,330 269,330"/>
+    <polyline points="277,330 281,330 284,316 288,342 291,330 293,330"/>
+    <polyline points="301,330 305,330 308,316 312,342 315,330 317,330"/>
+    <polyline points="325,330 329,330 332,316 336,342 339,330 341,330"/>
+    <polyline points="349,330 353,330 356,316 360,342 363,330 365,330"/>
+    <polyline points="373,330 377,330 380,316 384,342 387,330 389,330"/>
+  </g>
+  <text x="381" y="360" font-size="11" fill="#1F2937" text-anchor="middle">10:00:10</text>
+
+  <!-- 途絶えてからの経過時間 -->
+  <line x1="381" y1="368" x2="381" y2="384" stroke="#DC2626" stroke-width="2"/>
+  <line x1="381" y1="376" x2="650" y2="376" stroke="#DC2626" stroke-width="2"/>
+  <line x1="650" y1="368" x2="650" y2="384" stroke="#DC2626" stroke-width="2"/>
+  <text x="515" y="402" font-size="12" fill="#DC2626" text-anchor="middle">300秒を超えた</text>
+
+  <!-- 判定の時刻 -->
+  <line x1="650" y1="248" x2="650" y2="366" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="650" y="245" font-size="12" fill="#DC2626" text-anchor="middle" font-weight="bold">10:05:12 ゾンビと判定</text>
+</svg>

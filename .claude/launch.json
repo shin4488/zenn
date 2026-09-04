@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "zenn-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["zenn", "preview", "--port", "8000"],
+      "port": 8000
+    }
+  ]
+}

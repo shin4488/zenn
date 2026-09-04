@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="680" viewBox="0 0 840 340" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif">
+  <rect x="0" y="0" width="840" height="340" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowG" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9CA3AF"/>
+    </marker>
+  </defs>
+
+  <!-- 調査対象の時間帯 -->
+  <rect x="390" y="60" width="140" height="235" fill="#FEF9C3"/>
+  <text x="460" y="318" font-size="13" fill="#A16207" text-anchor="middle">前後10〜15分</text>
+
+  <!-- 行の基準線 -->
+  <g stroke="#E5E7EB" stroke-width="1.5">
+    <line x1="130" y1="100" x2="660" y2="100"/>
+    <line x1="130" y1="155" x2="660" y2="155"/>
+    <line x1="130" y1="210" x2="660" y2="210"/>
+    <line x1="130" y1="265" x2="660" y2="265"/>
+  </g>
+
+  <!-- 行ラベル -->
+  <text x="20" y="104" font-size="13" fill="#1F2937">ワーカーの再起動</text>
+  <text x="20" y="159" font-size="13" fill="#1F2937">メモリ使用率</text>
+  <text x="20" y="214" font-size="13" fill="#1F2937">DBの正常性</text>
+  <text x="20" y="264" font-size="13" fill="#1F2937">環境の変更</text>
+  <text x="20" y="279" font-size="9.5" fill="#6B7280">（更新・パッケージ追加）</text>
+
+  <!-- ワーカーの再起動:検出直前に1回 -->
+  <circle cx="431" cy="100" r="8" fill="#DC2626"/>
+  <text x="431" y="84" font-size="11" fill="#DC2626" text-anchor="middle" font-weight="bold">再起動</text>
+
+  <!-- メモリ使用率:検出直前に上限へ近づく -->
+  <line x1="130" y1="128" x2="660" y2="128" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="665" y="132" font-size="11" fill="#6B7280">80%</text>
+  <polyline points="130,150 218,149 298,146 351,142 377,136 404,128 426,119 430,114 437,117 444,122 451,135 461,146 483,150 660,150" fill="none" stroke="#EA580C" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- DBの正常性:期間中ずっと正常 -->
+  <line x1="130" y1="205" x2="660" y2="205" stroke="#16A34A" stroke-width="2"/>
+  <g fill="#16A34A">
+    <circle cx="145" cy="205" r="3"/><circle cx="180" cy="205" r="3"/><circle cx="215" cy="205" r="3"/>
+    <circle cx="250" cy="205" r="3"/><circle cx="285" cy="205" r="3"/><circle cx="320" cy="205" r="3"/>
+    <circle cx="355" cy="205" r="3"/><circle cx="390" cy="205" r="3"/><circle cx="425" cy="205" r="3"/>
+    <circle cx="460" cy="205" r="3"/><circle cx="495" cy="205" r="3"/><circle cx="530" cy="205" r="3"/>
+    <circle cx="565" cy="205" r="3"/><circle cx="600" cy="205" r="3"/><circle cx="635" cy="205" r="3"/>
+  </g>
+
+  <!-- 環境の変更:時間帯の外に1回 -->
+  <circle cx="218" cy="265" r="8" fill="#2563EB"/>
+  <text x="218" y="249" font-size="11" fill="#2563EB" text-anchor="middle" font-weight="bold">更新あり</text>
+
+  <!-- 検出時刻 -->
+  <line x1="460" y1="46" x2="460" y2="296" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="460" y="36" font-size="14" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビ検出</text>
+
+  <!-- 時間軸 -->
+  <line x1="130" y1="295" x2="668" y2="295" stroke="#9CA3AF" stroke-width="2" marker-end="url(#arrowG)"/>
+
+  <!-- 読み取り -->
+  <line x1="700" y1="60" x2="700" y2="295" stroke="#E5E7EB" stroke-width="1.5"/>
+  <text x="712" y="44" font-size="12" fill="#6B7280" font-weight="bold">読み取り</text>
+  <g font-size="11">
+    <text x="712" y="96" fill="#DC2626">検出直前に再起動</text>
+    <text x="712" y="111" fill="#DC2626" font-weight="bold">→ 関係あり</text>
+    <text x="712" y="151" fill="#DC2626">上限近くまで上昇</text>
+    <text x="712" y="166" fill="#DC2626" font-weight="bold">→ 関係あり</text>
+    <text x="712" y="206" fill="#6B7280">ずっと正常</text>
+    <text x="712" y="221" fill="#6B7280" font-weight="bold">→ 関係なし</text>
+    <text x="712" y="261" fill="#6B7280">時間帯の外</text>
+    <text x="712" y="276" fill="#6B7280" font-weight="bold">→ 関係なし</text>
+  </g>
+</svg>
