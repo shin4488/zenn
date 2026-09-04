@@ -145,12 +145,12 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 
 ### 2. ワーカーの再起動・退避
 
-| 確認対象 | 見る場所 | メトリクス・ログ |
-|---|---|---|
-| ワーカーごとの再起動回数 | Metrics Explorer | `composer.googleapis.com/workload/restart_count` |
-| 環境全体のワーカーPod退避回数 | Metrics Explorer | `composer.googleapis.com/environment/worker/pod_eviction_count` |
-| ワーカーごとのストレージ使用量・上限 | Metrics Explorer | `composer.googleapis.com/workload/disk/bytes_used`、`composer.googleapis.com/workload/disk/quota` |
-| 強制終了・停止の記録 | ワーカーログ（下のコマンド） | `Negsignal.SIGKILL`、`Received SIGTERM` |
+| 確認対象 | メトリクス・ログ |
+|---|---|
+| ワーカーごとの再起動回数 | `composer.googleapis.com/workload/restart_count`<br>（Metrics Explorer） |
+| 環境全体のワーカーPod退避回数 | `composer.googleapis.com/environment/worker/pod_eviction_count`<br>（Metrics Explorer） |
+| ワーカーごとのストレージ使用量・上限 | `composer.googleapis.com/workload/disk/bytes_used`、`composer.googleapis.com/workload/disk/quota`<br>（Metrics Explorer） |
+| 強制終了・停止の記録 | `Negsignal.SIGKILL`、`Received SIGTERM`<br>（ワーカーログ、下のコマンド） |
 
 メトリクスは、`Detected zombie job` のログの Hostname にあたるワーカーを `workload_name` で指定して見ます。退避回数だけは環境全体の値なので、退避があった時刻をワーカーログと照合してワーカーを特定します。そのワーカーのストレージ使用量が上限近くなら、退避の原因はストレージ不足と考えられます。
 
@@ -182,14 +182,14 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
 
 ### 3. ワーカーのメモリ・CPU
 
-| 対象 | 確認対象 | 見る場所 | メトリクス・設定 |
-|---|---|---|---|
-| ワーカー全体 | メモリ使用量 | Metrics Explorer | `composer.googleapis.com/workload/memory/bytes_used` |
-| ワーカー全体 | メモリ上限 | Metrics Explorer | `composer.googleapis.com/workload/memory/quota` |
-| ワーカー全体 | CPU使用時間 | Metrics Explorer | `composer.googleapis.com/workload/cpu/usage_time` |
-| タスクごと | CPU使用率 | Metrics Explorer | `composer.googleapis.com/workflow/task/cpu_usage` |
-| タスクごと | メモリ使用率 | Metrics Explorer | `composer.googleapis.com/workflow/task/mem_usage` |
-| 設定 | 1台のワーカーが同時に実行するタスク数の上限 | Airflow画面の Admin → Configurations | `[celery] worker_concurrency` |
+| 対象 | 確認対象 | メトリクス・設定 |
+|---|---|---|
+| ワーカー全体 | メモリ使用量 | `composer.googleapis.com/workload/memory/bytes_used`<br>（Metrics Explorer） |
+| ワーカー全体 | メモリ上限 | `composer.googleapis.com/workload/memory/quota`<br>（Metrics Explorer） |
+| ワーカー全体 | CPU使用時間 | `composer.googleapis.com/workload/cpu/usage_time`<br>（Metrics Explorer） |
+| タスクごと | CPU使用率 | `composer.googleapis.com/workflow/task/cpu_usage`<br>（Metrics Explorer） |
+| タスクごと | メモリ使用率 | `composer.googleapis.com/workflow/task/mem_usage`<br>（Metrics Explorer） |
+| 設定 | 1台のワーカーが同時に実行するタスク数の上限 | `[celery] worker_concurrency`<br>（Airflow画面の Admin → Configurations） |
 
 ワーカー全体のメモリは、使用量そのものではなく上限に対する割合で見ます。上の2つのメトリクスから割合を出すには、Metrics Explorerのクエリ言語に **PromQL** を選び、次のクエリを実行します（参考: [PromQLでの書き方](https://docs.cloud.google.com/monitoring/promql/promql-mapping)）。使用率（%）がそのまま表示されます。
 
@@ -250,11 +250,11 @@ composer_googleapis_com:workload_memory_quota{
 
 環境の更新やパッケージのインストール中はワーカーが入れ替わります。実行中のタスクが猶予時間内に終わらないと中断され、ゾンビとして検出されます。ワーカーが入れ替わる操作は、バージョン更新、PyPIパッケージの変更、Airflow構成のオーバーライドや環境変数の変更、ワーカーのCPU・メモリ・ストレージの変更などです（[公式ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/update-environments#updates-restart)）。
 
-| 確認対象 | 見る場所 | メトリクス・ログ |
-|---|---|---|
-| 環境の更新・パッケージの変更 | 監査ログ（下のコマンド） | `cloudaudit.googleapis.com/activity` |
-| メンテナンスの実施 | Metrics Explorer | `composer.googleapis.com/environment/maintenance_operation` |
-| 自動スケールによるワーカー数の増減 | Metrics Explorer | `composer.googleapis.com/environment/num_celery_workers` |
+| 確認対象 | メトリクス・ログ |
+|---|---|
+| 環境の更新・パッケージの変更 | `cloudaudit.googleapis.com/activity`<br>（監査ログ、下のコマンド） |
+| メンテナンスの実施 | `composer.googleapis.com/environment/maintenance_operation`<br>（Metrics Explorer） |
+| 自動スケールによるワーカー数の増減 | `composer.googleapis.com/environment/num_celery_workers`<br>（Metrics Explorer） |
 
 監査ログは次のコマンドで検索します。`log_id` の引数はURLエンコードせずに書きます（エンコードすると一致しなくなることが[クエリ言語の仕様](https://docs.cloud.google.com/logging/docs/view/logging-query-language#log_id)に書かれています）。
 
