@@ -39,11 +39,12 @@
   <!-- Scheduler -->
   <text x="665" y="44" font-size="15" fill="#1F2937" text-anchor="middle" font-weight="bold">Scheduler</text>
   <rect x="560" y="54" width="210" height="140" rx="12" fill="#F8FAFC" stroke="#334155" stroke-width="2.5"/>
-  <text x="665" y="92" font-size="13" fill="#1F2937" text-anchor="middle">今は 10:05:12</text>
-  <text x="665" y="116" font-size="12" fill="#DC2626" text-anchor="middle" font-weight="bold">最終更新から 302秒 ＞ 300秒</text>
-  <rect x="590" y="132" width="150" height="38" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
-  <text x="652" y="157" font-size="13" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
-  <text x="722" y="159" font-size="18" text-anchor="middle">👻</text>
+  <text x="665" y="86" font-size="13" fill="#1F2937" text-anchor="middle">今は 10:05:12</text>
+  <text x="665" y="108" font-size="12" fill="#DC2626" text-anchor="middle" font-weight="bold">最終更新から 302秒 ＞ 300秒</text>
+  <rect x="590" y="120" width="150" height="38" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text x="652" y="145" font-size="13" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
+  <text x="722" y="147" font-size="18" text-anchor="middle">👻</text>
+  <text x="665" y="180" font-size="11.5" fill="#DC2626" text-anchor="middle" font-weight="bold">→ 状態を failed に変更</text>
 
   <!-- ===================== 下段:同じことを時間の流れで見る ===================== -->
   <line x1="20" y1="232" x2="780" y2="232" stroke="#E5E7EB" stroke-width="1.5"/>
