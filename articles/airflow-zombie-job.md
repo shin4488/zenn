@@ -124,7 +124,7 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 |---|---|---|
 | `environment/` | 環境全体の値（リソース: Cloud Composer Environment） | `environment_name` |
 | `workload/` | ワーカーなど個々の実体ごとの値（リソース: Cloud Composer Workload） | `environment_name` と `workload_name`（ワーカー名） |
-| `workflow/` | DAG・タスクごとの値 | `environment_name` と DAG・タスクの名前 |
+| `workflow/` | DAG・タスクごとの値（リソース: Cloud Composer Workflow） | `workflow_name`（DAG名）と `task_id` |
 
 ### 1. 同じワーカーに集中していないか
 
