@@ -63,8 +63,7 @@
   <circle cx="505" cy="230" r="11" fill="#ffffff" stroke="#2563EB" stroke-width="2.5"/>
   <line x1="513" y1="238" x2="522" y2="247" stroke="#2563EB" stroke-width="3.5" stroke-linecap="round"/>
   <rect x="565" y="208" width="210" height="44" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
-  <text x="650" y="236" font-size="15" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
-  <text x="732" y="238" font-size="22" text-anchor="middle">👻</text>
+  <text x="670" y="236" font-size="15" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
 
   <!-- ===================== 行3:合図が届かない (cy=350) ===================== -->
   <text x="20" y="355" font-size="13" fill="#1F2937" font-weight="bold">DBに書き込めない</text>
@@ -88,6 +87,5 @@
   <circle cx="505" cy="350" r="11" fill="#ffffff" stroke="#2563EB" stroke-width="2.5"/>
   <line x1="513" y1="358" x2="522" y2="367" stroke="#2563EB" stroke-width="3.5" stroke-linecap="round"/>
   <rect x="565" y="328" width="210" height="44" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
-  <text x="650" y="356" font-size="15" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
-  <text x="732" y="358" font-size="22" text-anchor="middle">👻</text>
+  <text x="670" y="356" font-size="15" fill="#DC2626" text-anchor="middle" font-weight="bold">ゾンビと判定</text>
 </svg>
