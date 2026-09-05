@@ -3,7 +3,7 @@ title: "Airflowのゾンビタスクの原因調査と対処 - ハートビー�
 emoji: "👻"
 type: "tech"
 topics: ["airflow", "cloudcomposer", "googlecloud", "障害調査"]
-published: false
+published: true
 ---
 
 Airflowを運用していると、Schedulerのログに `Detected zombie job` と記録され、動いていたはずのタスクがゾンビタスクとして失敗することがあります。このログは「Airflowがタスクの動作を確認できなくなった」という結果を伝えるだけで、原因までは書かれていません。原因は、ワーカーのメトリクスやほかのログと突き合わせて絞り込む必要があります。
