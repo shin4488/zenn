@@ -8,11 +8,11 @@ published: false
 
 Airflowを運用していると、Schedulerのログに `Detected zombie job` と記録され、動いていたはずのタスクがゾンビタスクとして失敗することがあります。このログは「Airflowがタスクの動作を確認できなくなった」という結果を伝えるだけで、原因までは書かれていません。原因は、ワーカーのメトリクスやほかのログと突き合わせて絞り込む必要があります。
 
-この記事では、ゾンビタスクが検出される仕組みを説明したあと、発生の確認、原因の切り分け、対処の手順をまとめます。コマンド例はGoogle CloudのマネージドAirflow向けですが、考え方は自前のAirflowでも同じです。対象はAirflow 2系で、Airflow 3での変更点は最後にまとめます。
+この記事では、ゾンビタスクが検出される仕組みを説明したあと、発生の確認、原因の切り分け、対処の手順をまとめます。コマンド例はGoogle CloudのマネージドAirflow向けですが、考え方は自分で構築したAirflowでも同じです。対象はAirflow 2系で、Airflow 3での変更点は最後にまとめます。
 
 ## ゾンビタスクが検出される仕組み
 
-先に、Airflowがどんな条件でタスクをゾンビと判定するのかを見ておきます。原因を探すときは、この条件に当てはまる状況を順に確かめていくことになります。
+まず、Airflowがどんな条件でタスクをゾンビと判定するのかを説明します。原因を探すときは、この条件に当てはまる状況を順に確かめていくことになります。
 
 登場するのは次の3つです。
 
@@ -32,7 +32,7 @@ Schedulerはワーカーを直接監視しているわけではなく、DBに残
 - タスクを実行しているジョブが `running` ではなくなっている
 - 最終更新時刻から一定時間（既定で300秒）が過ぎている
 
-ゾンビ判定されたタスクは失敗になります。再試行の設定があれば再試行されます。
+ゾンビ判定されたタスクは失敗になります。DAGにタスクの再試行（`retries`）を設定していれば、そのタスクがもう一度実行されます。
 
 ![ハートビートが止まってからゾンビと判定されるまで](/images/airflow-zombie-job/fig2-timeline.png)
 *上:ハートビートが止まっても、DBの状態は running のまま最終更新時刻だけが古くなる。Schedulerは「今」との差が300秒を超えたのを見てゾンビと判定し、failed にする。下:同じ流れを時間軸で見たもの*
@@ -70,13 +70,13 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
 Detected zombie job: {'full_filepath': '/home/airflow/gcs/dags/sample_dag.py', ..., 'msg': "{'DAG Id': 'sample_dag', 'Task Id': 'load', 'Run Id': 'scheduled__2026-08-01T00:00:00+00:00', 'Hostname': 'airflow-worker-xxxxx'}", ...} (See https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/tasks.html#zombie-undead-tasks)
 ```
 
-調査に使うのは次の4つです。件数が多いときは、ログの時刻とこの4つを表計算ソフトなどに書き出しておくと、あとの手順で見比べやすくなります。
+調査に使うのは次の4つです。
 
 | 項目 | 使いみち |
 |---|---|
 | ログの時刻 | メトリクスやほかのログと同じ時間帯で突き合わせる |
 | DAG Id・Task Id | 影響した処理を特定する |
-| Run Id | 同じDAGの別の実行と区別する |
+| Run Id | DAGの実行1回ごとに付く識別子。同じDAGの別の実行と区別する |
 | Hostname | 実行していたワーカー。複数のタスクが同じワーカーに集中していないかを見る |
 
 ログが1件も見つからないときは、「発生していない」か「ログの保持期間を過ぎている」可能性があります。保持日数は次のコマンドで確認できます。
@@ -99,10 +99,10 @@ gcloud logging buckets describe _Default \
 
 | 経路 | 原因 | 主な手がかり |
 |---|---|---|
-| プロセスが止まる | メモリ不足による強制終了 | ワーカーログの `Negsignal.SIGKILL`、メモリ使用率 |
+| プロセスが止まる | ワーカーのメモリ不足による強制終了 | ワーカーログの `Negsignal.SIGKILL`（Podごと止まった場合は残らない）、再起動回数、ワーカーのメモリ使用率 |
 | プロセスが止まる | ワーカーの再起動 | ワーカーの再起動回数 |
-| プロセスが止まる | ワーカーの退避・縮小・環境更新・メンテナンス | Podの退避回数、ワーカー数の推移、監査ログ、メンテナンスのメトリクス |
-| DBに書き込めない | ワーカーの高負荷 | CPU・メモリ使用率、同時実行数 |
+| プロセスが止まる | ワーカーの退避・縮小・環境更新・メンテナンス（自分で構築した場合はノードの縮小やSpot VMの回収も） | Podの退避回数、ワーカー数の推移、監査ログ、メンテナンスのメトリクス |
+| DBに書き込めない | ワーカーの高負荷 | ワーカーのCPU・メモリ使用率、同時実行数 |
 | DBに書き込めない | メタデータDBの高負荷・停止 | DBの正常性、CPU・メモリ使用率 |
 | DBに書き込めない | ネットワーク障害 | 接続エラー、ワーカーログの `Heartbeat time limit exceeded` |
 | DBに書き込めない（一時的） | 一時的な遅れに対して判定までの時間が短い | 回復しているのに繰り返しゾンビになる。ワーカーログに `Heartbeat time limit exceeded` が繰り返し出る |
@@ -152,9 +152,9 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 | ワーカーごとのストレージ使用量・上限 | `composer.googleapis.com/workload/disk/bytes_used`、`composer.googleapis.com/workload/disk/quota`<br>（Metrics Explorer） |
 | 強制終了・停止の記録 | `Negsignal.SIGKILL`、`Received SIGTERM`<br>（ワーカーログ、下のコマンド） |
 
-メトリクスは、`Detected zombie job` のログの Hostname にあたるワーカーを `workload_name` で指定して見ます。退避回数だけは環境全体の値なので、退避があった時刻をワーカーログと照合してワーカーを特定します。そのワーカーのストレージ使用量が上限近くなら、退避の原因はストレージ不足と考えられます。
+メトリクスは、`Detected zombie job` のログの Hostname にあたるワーカーを `workload_name` で指定して見ます。退避回数だけは環境全体の値なので、退避の時刻をワーカーログと照合してワーカーを特定します。そのワーカーのストレージ使用量が上限近くなら、ストレージ不足による退避と考えられます。
 
-ワーカーログは次のコマンドで検索します（`Negsignal.SIGKILL` と `Received SIGTERM` の意味は[公式のトラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#sigterm)を参照）。手順6で使う `Heartbeat time limit exceeded` も一緒に探します。出力の `labels` で、どのDAG・タスクのログかが分かります。
+ワーカーログは次のコマンドで検索します（`Negsignal.SIGKILL` と `Received SIGTERM` の意味は[公式のトラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#sigterm)を参照）。`Heartbeat time limit exceeded` は、ワーカーがDBに書き込めないまま判定時間を超えたときのログです。[手順6](#6.-通信エラーと設定値)で使うので、ここで一緒に探しておきます。出力の `labels` で、どのDAG・タスクのログかが分かります。
 
 ```shell
 gcloud logging read 'resource.type="cloud_composer_environment"
@@ -172,6 +172,12 @@ AND timestamp<="2026-08-01T12:00:00Z"' \
 ```
 
 検出の直前に同じワーカーの再起動や退避があれば、その再起動・退避でタスクのプロセスが失われたと判断できます。再起動の理由は回数からは分からないので、次のメモリ・CPUで確かめます。
+
+ワーカーのPodごと強制終了された場合（OOMKilled など）はログが残らず、`Negsignal.SIGKILL` は出ません。ログがなくても再起動回数が増えていれば、Podごと止まったとみて手順3に進みます。
+
+:::details Kubernetesのイベントログで確認できる環境
+GKEクラスタが自分のプロジェクトにある環境（マネージドAirflowの第2世代や、自分で構築した場合）では、`log_id("events")` で `jsonPayload.reason` が `Evicted` や `OOMKilling` のログからも、退避や強制終了を確認できます。自分で構築した場合は、ノードの縮小やSpot VMの回収でもワーカーのPodが止まるので、同じログで確認します。第3世代ではクラスタがGoogle側の管理で参照できず、影響は退避・再起動の回数として現れます。
+:::
 
 状況に応じた対処です（各手順の対処は[公式のトラブルシューティング](https://docs.cloud.google.com/composer/docs/composer-3/troubleshooting-dags#zombie-tasks)に基づいています）。
 
@@ -213,8 +219,10 @@ composer_googleapis_com:workload_memory_quota{
 | ポイント | 理由 |
 |---|---|
 | ゾンビになったタスクを実行していたワーカー（ログの Hostname）だけを指定する | 全ワーカーの合計だと、1台の逼迫が薄まって見えない |
-| 検出前後の最大値を見る | メトリクスは60秒間隔なので、短時間の急上昇を取りこぼす |
-| 80%超が続き、同じ時間帯に再起動や `Negsignal.SIGKILL` があれば、メモリ不足を有力な候補とする | 使用率だけでは、強制終了されたかどうかは分からない |
+| 平均ではなく、検出前後の最大値を見る | メトリクスは60秒間隔なので、短時間の急上昇を取りこぼす |
+| 80%超が続き、同じ時間帯に再起動や `Negsignal.SIGKILL` があれば、ワーカーのメモリ不足を有力な候補とする※ | 使用率が高いこととプロセスが強制終了されたことは別なので、両方そろって初めて候補になる |
+
+※ Google Cloudは、ワーカーのCPU・メモリ使用率が80%を超えないように調整することを勧めています。検出前後にこの水準を超え続けていたなら、リソース不足を候補に挙げます。
 
 タスクごとのCPU・メモリ使用率は最初から割合（%）なので、そのまま見られます。同じ時間帯に動いていたタスクのうち、どれが多く使っていたかを比べるのに使います。
 
@@ -223,7 +231,7 @@ composer_googleapis_com:workload_memory_quota{
 | 状況 | 対処 |
 |---|---|
 | ワーカー全体のメモリ・CPUが上限近く（80%超）まで使われていた | ワーカーのメモリ・CPUを増やす。<br>同時に実行するタスク数の上限 `worker_concurrency` を下げる※ |
-| 特定のタスクだけ使用量が大きい | タスクの処理を見直して使用量を減らす。<br>KubernetesPodOperator でワーカーの外の専用Podで実行する（CPU・メモリを個別に指定できる） |
+| 特定のタスクだけ使用量が大きい | まずタスクの処理を見直して使用量を減らす。<br>それでも収まらない重い処理だけ、KubernetesPodOperator でワーカーの外の専用Podに切り出す（CPU・メモリを個別に指定できるが、DAGの書き換えとコンテナイメージの用意が必要） |
 
 ※ `worker_concurrency` は、1台のワーカーが同時に実行するタスク数の上限です。設定で決めた上限にすぎず、その数のタスクを同時に動かしてもワーカーのメモリ・CPUが足りるとは限りません。下げると同時に動くタスクが減り、ワーカー全体のメモリ・CPU使用量のピークが下がります。いくつまで下げるかは、そのワーカーで同時に動いていたタスク数と1タスクあたりの使用量から決めます。
 
@@ -237,14 +245,14 @@ composer_googleapis_com:workload_memory_quota{
 | CPU使用率 | `composer.googleapis.com/environment/database/cpu/utilization` |
 | メモリ使用率 | `composer.googleapis.com/environment/database/memory/utilization` |
 
-`database_health` は、監視用のPodが1分ごとにDBへ接続できたかを表す値なので、正常でも短い遅延や一部の接続失敗までは否定できません。CPU・メモリ使用率と接続エラーも合わせて見て、どれにも異常がなければDBが原因である可能性は下がります。
+`database_health` は、監視用のPodが1分ごとにDBへ接続できたかを表す値なので、正常でも短い遅延や一部の接続失敗までは否定できません。また、CPU・メモリ使用率と接続エラーも合わせて見て、どれにも異常がなければDBが原因である可能性は下がります。
 
 状況に応じた対処です。
 
 | 状況 | 対処 |
 |---|---|
 | DBのCPU・メモリが高い | 環境のサイズを上げる（DBの性能も上がる）。<br>Schedulerの台数やDAG解析の頻度を下げる |
-| DAGのコードがDBに負荷をかけている | トップレベルのコード（DAGファイルの解析のたびに実行される部分）で `Variables.get` や XCom を多用しない（Jinjaテンプレートで参照する）。<br>`CloudLoggingHandler` を使わない |
+| DAGのコードがDBに負荷をかけている | トップレベルのコード（DAGファイルの解析のたびに実行される部分）で `Variables.get` や XCom を多用しない（Jinjaテンプレートで参照する）。<br>ログ設定を独自に変えて `CloudLoggingHandler` を追加しない（標準のログ転送のままにする） |
 
 ### 5. 環境の変更・メンテナンス
 
