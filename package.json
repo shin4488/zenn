@@ -1,9 +1,6 @@
 {
   "name": "zenn",
   "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "zenn-cli": "^0.5.7"
