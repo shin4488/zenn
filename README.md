@@ -7,8 +7,9 @@
 
 ```mermaid
 flowchart LR
-    New["雛形作成<br>(npx zenn new:article)"] --> Write["記事・画像の編集<br>(Markdown / SVG)"]
-    Write --> Preview["ローカルプレビュー<br>(npx zenn preview)"]
+    New["雛形作成<br>(npx zenn new:article<br>--slug #lt;スラッグ#gt;)"] --> Write["記事・画像の編集<br>(Markdown / SVG)"]
+    Write --> Export["図を PNG に書き出し<br>(images/)"]
+    Export --> Preview["ローカルプレビュー<br>(npx zenn preview)"]
     Preview --> Publish["公開フラグ ON<br>(published: true)"]
     Publish --> Push["main ブランチへ Push"]
     Push --> Zenn["Zenn サイトへ自動反映"]
@@ -25,8 +26,8 @@ npm install
 ### 2. よく使うコマンド
 
 ```bash
-# 新しい記事のテンプレート作成（articles/ ディレクトリに生成）
-npx zenn new:article
+# 新しい記事の雛形を articles/<スラッグ>.md に作成（--slug を省くとスラッグがランダムな文字列になる）
+npx zenn new:article --slug <スラッグ>
 
 # ローカルプレビューサーバの起動（http://localhost:8000 で確認）
 npx zenn preview
