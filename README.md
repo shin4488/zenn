@@ -39,7 +39,8 @@ npx zenn preview
 | --- | --- |
 | 記事 | `articles/<スラッグ>.md` に置きます。スラッグは小文字の半角英数字（a-z0-9）・ハイフン・アンダースコアの12〜50字です。 |
 | 画像 | `images/<スラッグ>/` に置き、本文からは `/images/<スラッグ>/example.png` の形式で参照します。 |
-| 図 | 元データの SVG を `assets/svg/<スラッグ>/` に置き、PNG に書き出して `images/<スラッグ>/` に置きます。書き出し方は [AGENTS.md の図の作成・修正フロー](AGENTS.md#図の作成修正フロー) を参照してください。 |
+| 図 | 元データの SVG を `assets/svg/<スラッグ>/` に置き、PNG に書き出して `images/<スラッグ>/` に置きます。`assets/` は Zenn のデプロイ対象外です。書き出し方は [AGENTS.md の図の作成・修正フロー](AGENTS.md#図の作成修正フロー) を参照してください。 |
+| 本 | `books/<スラッグ>/` に置きます。 |
 
 記事の冒頭のフロントマターで、タイトル、絵文字、記事の種類、トピック、公開状態を設定します。
 
@@ -51,14 +52,4 @@ type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["react", "typescript"]
 published: false # true で本番公開
 ---
-```
-
-## ディレクトリ構成
-
-```text
-zenn/
-├── articles/        # 記事 Markdown ファイル
-├── images/          # 記事用画像アセット（スラッグごとのサブディレクトリ）
-├── assets/          # 作図元ファイル（SVG 等、デプロイ対象外）
-└── books/           # Zenn Book 管理用ディレクトリ
 ```
