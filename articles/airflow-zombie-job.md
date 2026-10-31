@@ -22,7 +22,7 @@ Airflowを運用していると、Schedulerのログに `Detected zombie job` �
 | メタデータDB | タスクの状態を保存する |
 | Scheduler | DAGの実行タイミングを決めて、タスクをワーカーに割り当てる。<br>ゾンビタスクの検出も担当する |
 
-ワーカーでタスクを実行しているプロセスは、既定では5秒おきにメタデータDBの「最終更新時刻」を現在時刻に書き換えます。これが「まだ動いている」という合図で、心拍のように一定間隔で打ち続けることから**ハートビート**と呼ばれます。以降はこの合図をハートビートと書きます。
+ワーカーでタスクを実行しているプロセスは、既定では5秒おきにメタデータDBの「最終更新時刻」を現在時刻に書き換えます。これが「まだ動いている」という合図で、心拍のように一定間隔で打ち続けることから**ハートビート**と呼ばれます。
 
 ![ワーカー・メタデータDB・Schedulerの関係](/images/airflow-zombie-job/fig1-heartbeat.png)
 *① ワーカーは5秒おきに現在時刻をDBに書き込む。② その時刻がタスクの最終更新時刻として残る。③ Schedulerはワーカーを直接見ず、この時刻を読んで、最近更新されていれば動いていると判断する*
@@ -88,7 +88,7 @@ gcloud logging buckets describe _Default \
   --format='value(retentionDays)'
 ```
 
-期間全体の傾向を見たいときは、ゾンビとして停止したタスク数のメトリクス `composer.googleapis.com/environment/zombie_task_killed_count` を使ってMetrics Explorerで表示できます（メトリクス一覧: [公式の監視ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/monitor-environments)）。
+期間全体の傾向は、ゾンビとして停止したタスク数のメトリクス `composer.googleapis.com/environment/zombie_task_killed_count` をMetrics Explorerで表示すると確認できます（メトリクス一覧: [公式の監視ドキュメント](https://docs.cloud.google.com/composer/docs/composer-3/monitor-environments)）。
 
 ## ハートビートが途絶える原因
 
@@ -113,16 +113,16 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 
 原因候補が複数あるので、検出時刻の前後10〜15分に絞って、ワーカー → メタデータDB → 環境の変更 → 通信の順に確認します。
 
-下の図は、この切り分けを1件のゾンビタスクに当てはめた例です。以降の手順で集める情報を、ゾンビ検出の時刻を軸に同じ時間軸へ並べると、どの出来事が検出と重なっているかが見えてきます。
+下の図は、この切り分けを1件のゾンビタスクに当てはめた例です。以降の手順で集める情報をゾンビ検出の時刻にそろえて並べると、どの出来事が検出と重なっているかがわかります。
 
 ![切り分けの例](/images/airflow-zombie-job/fig4-window.png)
 *切り分けの例。ワーカーの再起動とメモリの上昇が検出直前に重なり、DBは正常、環境の変更は時間帯の外にある。この場合はワーカー側を疑う。各行の情報の集め方は手順2〜5で説明する*
 
 以降のコマンドの `YOUR_PROJECT_ID`、`YOUR_COMPOSER_ENVIRONMENT`、`YOUR_WORKER_NAME` は調査対象に置き換えてください。
 
-各手順の表にある `composer.googleapis.com/...` は、Cloud Monitoringのメトリクス名です。Google Cloudコンソールの Monitoring → Metrics Explorer（`https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR_PROJECT_ID`）を開き、「指標を選択」の検索欄にこの名前を貼り付けるとグラフが表示されます。名前の先頭で対象が分かれます。
+各手順の表にある `composer.googleapis.com/...` は、Cloud Monitoringのメトリクス名です。Google Cloudコンソールの Monitoring → Metrics Explorer（`https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR_PROJECT_ID`）を開き、「指標を選択」の検索欄にこの名前を貼り付けるとグラフが表示されます。`composer.googleapis.com/` に続く部分で、対象が次のように分かれます。
 
-| 名前の先頭 | 対象（Metrics Explorerで選ぶリソースの種類） | 絞り込み |
+| 続く部分 | 対象（Metrics Explorerで選ぶリソースの種類） | 絞り込み |
 |---|---|---|
 | `environment/` | 環境全体の値（Cloud Composer Environment） | `environment_name` |
 | `workload/` | ワーカーなど個々の実体ごとの値（Cloud Composer Workload） | `environment_name` と `workload_name`（ワーカー名） |
@@ -133,7 +133,7 @@ Google Cloudの[公式ドキュメント](https://docs.cloud.google.com/composer
 最初に、[発生を確認する](#発生を確認する)で取得したログを、時刻・Hostname・DAG Id・Task Idで並べて見比べます。
 
 ![ゾンビタスクの発生パターンと調査対象](/images/airflow-zombie-job/fig5-same-worker.png)
-*ログを時刻・Hostname・DAG Id・Task Idで並べると傾向が見える。傾向によって、次に調べる対象が変わる。傾向は原因を確定する証拠ではなく、調査の順番を決める手がかり*
+*ログの傾向の3つの例と、それぞれ次に調べる対象*
 
 傾向によって、次に調べる対象が変わります。ただし、傾向だけで原因は確定できません。同じワーカーに集中していても、再起動やリソース不足の記録がなければ別の原因の可能性があります。
 
@@ -214,15 +214,15 @@ composer_googleapis_com:workload_memory_quota{
 }
 ```
 
-見るときのポイントは3つです。
+グラフを見るときは、次の3点に注意します。
 
-| ポイント | 理由 |
+| 注意する点 | 理由 |
 |---|---|
 | ゾンビになったタスクを実行していたワーカー（ログの Hostname）だけを指定する | 全ワーカーの合計だと、1台の逼迫が薄まって見えない |
 | 平均ではなく、検出前後の最大値を見る | 平均にすると、記録された短いピークがならされて見えなくなる。<br>メトリクスは60秒間隔なので、それより短い急上昇は記録されないこともある |
 | 80%超が続き、同じ時間帯に再起動や `Negsignal.SIGKILL` があれば、ワーカーのメモリ不足を有力な候補とする※ | 使用率が高いこととプロセスが強制終了されたことは別なので、両方そろって初めて候補になる |
 
-※ Google Cloudは、ワーカーのCPU・メモリ使用率が80%を超えないように調整することを勧めています。検出前後にこの水準を超え続けていたなら、リソース不足を候補に挙げます。
+※ Google Cloudは、ワーカーのCPU・メモリ使用率が80%を超えないように調整することを勧めています。
 
 タスクごとのCPU・メモリ使用率は最初から割合（%）なので、そのまま見られます。同じ時間帯に動いていたタスクのうち、どれが多く使っていたかを比べるのに使います。
 
@@ -233,7 +233,7 @@ composer_googleapis_com:workload_memory_quota{
 | ワーカー全体のメモリ・CPUが上限近く（80%超）まで使われていた | ワーカーのメモリ・CPUを増やす。<br>同時に実行するタスク数の上限 `worker_concurrency` を下げる※ |
 | 特定のタスクだけ使用量が大きい | まずタスクの処理を見直して使用量を減らす。<br>それでも収まらない重い処理だけ、KubernetesPodOperator でワーカーの外の専用Podに切り出す（CPU・メモリを個別に指定できるが、DAGの書き換えとコンテナイメージの用意が必要） |
 
-※ `worker_concurrency` は、1台のワーカーが同時に実行するタスク数の上限です。設定で決めた上限にすぎず、その数のタスクを同時に動かしてもワーカーのメモリ・CPUが足りるとは限りません。下げると同時に動くタスクが減り、ワーカー全体のメモリ・CPU使用量のピークが下がります。いくつまで下げるかは、そのワーカーで同時に動いていたタスク数と1タスクあたりの使用量から決めます。
+※ `worker_concurrency` は設定で決めた上限にすぎず、その数のタスクを同時に動かしてもワーカーのメモリ・CPUが足りるとは限りません。下げると同時に動くタスクが減り、ワーカー全体のメモリ・CPU使用量のピークが下がります。いくつまで下げるかは、そのワーカーで同時に動いていたタスク数と1タスクあたりの使用量から決めます。
 
 ### 4. メタデータDB
 
@@ -245,14 +245,14 @@ composer_googleapis_com:workload_memory_quota{
 | CPU使用率 | `composer.googleapis.com/environment/database/cpu/utilization` |
 | メモリ使用率 | `composer.googleapis.com/environment/database/memory/utilization` |
 
-`database_health` は、監視用のPodが1分ごとにDBへ接続できたかを表す値なので、正常でも短い遅延や一部の接続失敗までは否定できません。また、CPU・メモリ使用率と接続エラーも合わせて見て、どれにも異常がなければDBが原因である可能性は下がります。
+`database_health` は、監視用のPodが1分ごとにDBへ接続できたかを表す値なので、正常でも短い遅延や一部の接続失敗までは否定できません。そのため、CPU・メモリ使用率と接続エラーも合わせて見ます。どれにも異常がなければ、DBが原因である可能性は低くなります。
 
 状況に応じた対処です。
 
 | 状況 | 対処 |
 |---|---|
 | DBのCPU・メモリが高い | 環境のサイズを上げる（DBの性能も上がる）。<br>Schedulerの台数やDAG解析の頻度を下げる |
-| DAGのコードがDBに負荷をかけている | トップレベルのコード（DAGファイルの解析のたびに実行される部分）で `Variables.get` や XCom を多用しない（Jinjaテンプレートで参照する）。<br>ログ設定を独自に変えて `CloudLoggingHandler` を追加しない（標準のログ転送のままにする） |
+| DAGのコードがDBに負荷をかけている | トップレベルのコード（DAGファイルの解析のたびに実行される部分）で `Variable.get` や XCom を多用しない（Jinjaテンプレートで参照する）。<br>ログ設定を独自に変えて `CloudLoggingHandler` を追加しない（標準のログ転送のままにする） |
 
 ### 5. 環境の変更・メンテナンス
 
@@ -311,7 +311,7 @@ flowchart LR
     P2 -- "手順2で確認" --> P2r["一時ファイルを減らす<br>ストレージを増やす"]
     P3 -- "手順5で確認" --> P3r["更新の時間帯をずらす<br>メンテナンスウィンドウを設定"]
     W1 -- "手順3で確認" --> W1r["CPU・メモリを増やす<br>worker_concurrency を下げる<br>重いタスクは専用Podで実行"]
-    W2 -- "手順4で確認" --> W2r["環境のサイズを上げる<br>DAGのトップレベルで Variables.get や XCom を多用しない"]
+    W2 -- "手順4で確認" --> W2r["環境のサイズを上げる<br>DAGのトップレベルで Variable.get や XCom を多用しない"]
     W3 -- "手順6で確認" --> W3r["根本: 遅れの原因を直す<br>暫定: scheduler_zombie_task_threshold を伸ばす"]
 ```
 
