@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "license": "ISC",
   "dependencies": {
-    "zenn-cli": "^0.5.7"
+    "zenn-cli": "^0.5.8"
   }
 }
